@@ -1,8 +1,9 @@
 import casadi as cs
 from typing import Union
 
+ArrayType = Union[cs.DM, cs.SX]
 
-def deg2rad(x):
+def deg2rad(x: ArrayType) -> ArrayType:
     """! Convert degrees to radians.
 
     @param x An array containing angles in degrees.
@@ -11,7 +12,7 @@ def deg2rad(x):
     return (pi / 180.0) * x
 
 
-def rad2deg(x):
+def rad2deg(x: ArrayType) -> ArrayType:
     """! Convert radians to degrees.
 
     @param x An array containing angles in radians.
@@ -21,7 +22,13 @@ def rad2deg(x):
 
 
 class Rotation:
-    def __init__(self, quat, normalize=True):
+    def __init__(self, quat: ArrayType, normalize: bool=True):
+        """! Initializer for the Rotation class.
+
+        @param quat Quaternion representing the rotation.
+        @param normalize When true, the quaternion is normalized.
+        @return An instance of the Rotation class.
+        """
         quat = cs.vec(quat)
 
         assert (
@@ -35,9 +42,11 @@ class Rotation:
 
     @staticmethod
     def identity():
+        """! Get the identity rotation."""
         return Rotation([0.0, 0.0, 0.0, 1.0])
 
     def inv(self):
+        """! Invert this rotation."""
         return Rotation(cs.vertcat(self._quat[:-1], -self._quat[-1]))
 
     #
@@ -45,12 +54,22 @@ class Rotation:
     #
 
     @staticmethod
-    def from_quat(quat):
+    def from_quat(quat: ArrayType):
+        """! Initialize from quaternion.
+
+        @param quat Quaternion in scalar-last (x, y, z, w) format. The quaternion will be normalized to unit norm.
+        @return Object containing the rotation represented by the input quaternion.
+        """
         return Rotation(quat)
 
     @staticmethod
-    def from_matrix(matrix):
-        pass
+    def from_matrix(matrix: ArrayType):
+        """! Initialize from rotation matrix.
+
+        @param matrix A single 3-by-3 rotation matrix or 4-by-4 homogeneous transformation matrix.
+        @return Object containing the rotation represented by the rotation matrix.
+        """
+        matrix = cs.horzcat(matrix)[:3, :3]  # ensure matrix is 3-by-3 and in casadi format
 
     @staticmethod
     def from_rotvec(rotvec, degrees=False):
