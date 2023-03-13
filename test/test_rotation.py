@@ -78,8 +78,8 @@ def test_Rotation_from_matrix():
         print("  Scipy:", Q)
         print("  Lib:  ", q)
 
-        test1 = np.allclose(q, Q, atol=1e-4, rtol=1e-4)
-        test2 = np.allclose(-q, Q, atol=1e-4, rtol=1e-4)
+        test1 = np.allclose(q, Q)
+        test2 = np.allclose(-q, Q)
 
         assert test1 or test2
 
@@ -96,8 +96,8 @@ def test_Rotation_from_rotvec():
         print("  Scipy:", Q)
         print("  Lib:  ", q)
 
-        test1 = np.allclose(q, Q, atol=1e-4, rtol=1e-4)
-        test2 = np.allclose(-q, Q, atol=1e-4, rtol=1e-4)
+        test1 = np.allclose(q, Q)
+        test2 = np.allclose(-q, Q)
 
         assert test1 or test2
 
@@ -114,8 +114,8 @@ def test_Rotation_from_mrp():
         print("  Scipy:", Q)
         print("  Lib:  ", q)
 
-        test1 = np.allclose(q, Q, atol=1e-4, rtol=1e-4)
-        test2 = np.allclose(-q, Q, atol=1e-4, rtol=1e-4)
+        test1 = np.allclose(q, Q)
+        test2 = np.allclose(-q, Q)
 
         assert test1 or test2
 
@@ -135,7 +135,7 @@ def test_Rotation_from_mrp():
 #             print("  Scipy:", Q)
 #             print("  Lib:  ", q)
 
-#             assert np.allclose(q, Q, atol=1e-4, rtol=1e-4)
+#             assert np.allclose(q, Q)
 
 
 def test_Rotation_as_quat():
@@ -150,7 +150,7 @@ def test_Rotation_as_quat():
         print("  Scipy:", Q)
         print("  Lib:  ", q)
 
-        assert np.allclose(q, Q, atol=1e-4, rtol=1e-4)
+        assert np.allclose(q, Q)
 
 
 def test_Rotation_as_matrix():
@@ -165,7 +165,7 @@ def test_Rotation_as_matrix():
         print("  Scipy:", M)
         print("  Lib:  ", m)
 
-        assert np.allclose(m, M, atol=1e-4, rtol=1e-4)
+        assert np.allclose(m, M)
 
 
 def test_Rotation_as_rotvec():
@@ -195,7 +195,7 @@ def test_Rotation_as_mrp():
         print("  Scipy:", MRP)
         print("  Lib:  ", mrp)
 
-        assert np.allclose(mrp, MRP, atol=1e-4, rtol=1e-4)
+        assert np.allclose(mrp, MRP)
 
 
 def test_Rotation_as_euler():
@@ -211,7 +211,7 @@ def test_Rotation_as_euler():
             print("  Scipy:", EULER)
             print("  Lib:  ", euler)
 
-            assert np.allclose(euler, EULER, atol=1e-4, rtol=1e-4)
+            assert np.allclose(euler, EULER)
 
         seq = seq.upper()
         for i in range(NUM_RANDOM):
@@ -225,4 +225,4 @@ def test_Rotation_as_euler():
             print("  Scipy:", EULER)
             print("  Lib:  ", euler)
 
-            assert np.allclose(euler, EULER, atol=1e-4, rtol=1e-4)
+            assert np.allclose(euler, EULER)
