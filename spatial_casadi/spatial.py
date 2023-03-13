@@ -196,14 +196,69 @@ class Translation:
         ), f"expected translation vector to have length 3, got {self._t.shape[0]}."
 
     @staticmethod
+    def from_vector(self, t):
+        return Translation(t)
+
+    @staticmethod
     def from_matrix(T):
         return Translation(T[:3, 3])
 
+    def as_vector(self):
+        return self._t
+
+    def as_matrix(self):
+        return cs.vertcat(
+            cs.horzcat(Rotation.identity().as_matrix(), self._t),
+            cs.DM([[0.0, 0.0, 0.0, 1.0]]),
+        )
+
 
 class Transformation:
-    def __init__(self, rotation, translation):
-        self.rotation = rotation
-        self.translation = translation
+    def __init__(self, rotation: Rotation, translation: Translation):
+        """! Initializer for the Transformation class.
+
+        @param rotation The rotation part of the homogenous transformation.
+        @param translation The translation part of the homogenous transformation.
+        @return An instance of the Transformation class.
+        """
+        self._rotation = rotation
+        self._translation = translation
 
     def inv(self):
-        pass
+        """! Invert this homogeneous transformation."""
+        R = self._rotation.inv().as_matrix()
+        t = self._translation.as_vector()
+        return Transformation(Rotation.from_matrix(R.T), Translation(-R.T @ t))
+
+    def translation(self) -> Translation:
+        """! Return the translation part of the homogeneous transformation.
+
+        @return The translation part of the homogeneous transformation.
+        """
+        return self._translation
+
+    def rotation(self) -> Rotation:
+        """! Return the rotation part of the homogeneous transformation.
+
+        @return The rotation part of the homogeneous transformation.
+        """        
+        return self._rotation
+
+    @staticmethod
+    def from_matrix(T: ArrayType):
+        """! Initialize from homogenous transformation matrix.
+
+        @param matrix A 4-by-4 homogeneous transformation matrix.
+        @return Object containing the homogeneous transformation represented by the matrix.
+        """
+        return Transformation(Rotation.from_matrix(T), Translation.from_matrix(T))
+
+    def as_matrix(self) -> ArrayType:
+        """! Represent as homogenous transformation matrix.
+
+        @return A 4-by-4 homogenous transformation matrix.
+        """
+        return cs.vertcat(
+            cs.horzcat(self._rotation.as_matrix(), self._translation.as_vector()),
+            cs.DM([[0.0, 0.0, 0.0, 1.0]]),
+        )
