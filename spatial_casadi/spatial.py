@@ -1,8 +1,12 @@
 """! @brief Main implementation of several data structures and helper functions for spatial transformations in CasADi."""
 
+import re
 import casadi as cs
 from typing import Union
 
+
+## The number pi (i.e. 3.141...)
+pi = cs.np.pi
 
 ## CasADi array types.
 ArrayType = Union[cs.DM, cs.SX]
@@ -55,9 +59,20 @@ class Rotation:
         """
         # DEV NOTE: this computes self * other
         if isinstance(other, Rotation):
-            pass
+            p = self.as_quat()
+            q = other.as_quat()
+            cross = cs.cross(p[:3], q[:3])
+            r = cs.vertcat(
+                p[3] * q[0] + q[3] * p[0] + cross[0],
+                p[3] * q[1] + q[3] * p[1] + cross[1],
+                p[3] * q[2] + q[3] * p[2] + cross[2],
+                p[3] * q[3] - p[0] * q[0] - p[1] * q[1] - p[2] * q[2],
+            )
+            return Rotation(r)
+
         elif isinstance(other, Translation):
             return Translation(self.as_matrix() @ other.as_vector())
+
         else:
             raise TypeError(
                 f"The input type for the other object is not recognized, expected either 'Rotation' or 'Translation', got '{type(other)}'."
@@ -203,7 +218,32 @@ class Rotation:
         @param degrees If True, then the given angles are assumed to be in degrees. Default is False.
         @return Object containing the rotation represented by the rotation around given axes with given angles.
         """
-        pass
+        num_axes = len(seq)
+        if num_axes < 1 or num_axes > 3:
+            raise ValueError(
+                "Expected axis specification to be a non-empty "
+                "string of upto 3 characters, got {}".format(seq)
+            )
+
+        intrinsic = re.match("^[XYZ]{1,3}$", seq) is not None
+        extrinsic = re.match("^[xyz]{1,3}$", seq) is not None
+        if not (intrinsic or extrinsic):
+            raise ValueError(
+                "Expected axes from `seq` to be from ['x', 'y', "
+                "'z'] or ['X', 'Y', 'Z'], got {}".format(seq)
+            )
+
+        if any(seq[i] == seq[i + 1] for i in range(num_axes - 1)):
+            raise ValueError(
+                "Expected consecutive axes to be different, " "got {}".format(seq)
+            )
+
+        seq = seq.lower()
+
+        ## TODO
+
+        if degrees:
+            angles = deg2rad(angles)
 
     #
     # As methods
@@ -302,7 +342,112 @@ class Rotation:
         @param degrees Returned angles are in degrees if this flag is True, else they are in radians. Default is False.
         @return Euler angles specified in radians (degrees is False) or degrees (degrees is True).
         """
-        pass
+        if len(seq) != 3:
+            raise ValueError(f"Expected 3 axes, got {len(seq)}.")
+
+        intrinsic = re.match("^[XYZ]{1,3}$", seq) is not None
+        extrinsic = re.match("^[xyz]{1,3}$", seq) is not None
+
+        if not (intrinsic or extrinsic):
+            raise ValueError(
+                "Expected axes from `seq` to be from "
+                "['x', 'y', 'z'] or ['X', 'Y', 'Z'], "
+                "got {}".format(seq)
+            )
+
+        if any(seq[i] == seq[i + 1] for i in range(2)):
+            raise ValueError(
+                "Expected consecutive axes to be different, " "got {}".format(seq)
+            )
+
+        seq = seq.lower()
+
+        # Compute euler from quat
+        if extrinsic:
+            angle_first = 0
+            angle_third = 2
+        else:
+            seq = seq[::-1]
+            angle_first = 2
+            angle_third = 0
+
+        def elementary_basis_index(axis):
+            if axis == b"x":
+                return 0
+            elif axis == b"y":
+                return 1
+            elif axis == b"z":
+                return 2
+
+        i = elementary_basis_index(seq[0])
+        j = elementary_basis_index(seq[1])
+        k = elementary_basis_index(seq[2])
+
+        symmetric = i == k
+
+        if symmetric:
+            k = 3 - i - j  # get third axis
+
+        # Check if permutation is even (+1) or odd (-1)
+        sign = (i - j) * (j - k) * (k - i) // 2
+
+        eps = 1e-7
+
+        if symmetric:
+            a = self._quat[3]
+            b = self._quat[i]
+            c = self._quat[j]
+            d = self._quat[k] * sign
+        else:
+            a = self._quat[3] - self._quat[j]
+            b = self._quat[i] + self._quat[k] * sign
+            c = self._quat[j] + self._quat[3]
+            d = self._quat[k] * sign - self._quat[i]
+
+        angles1 = 2.0 * cs.arctan2(c**2 + d**2, a**2 + b**2)
+
+        case = cs.if_else(
+            cs.fabs(angles1) <= eps,
+            1,
+            cs.if_else(
+                cs.fabs(angles1 - pi) <= eps,
+                2,
+                0,
+            ),
+        )
+
+        half_sum = cs.arctan2(b, a)
+        half_diff = cs.arctan2(d, c)
+
+        angles_case_0 = cs.SX.zeros(3)
+        angles_case_0[1] = angles1
+        angles_case_0[angle_first] = half_sum - half_diff
+        angles_case_0[angle_third] = half_sum + half_diff
+
+        angles_case_else = cs.SX.zeros(3)
+        angles_case_else[0] = cs.if_else(
+            case == 1, 2.0 * half_sum, 2.0 * half_diff * (-1.0 if extrinsic else 1.0)
+        )
+        angles_case_else[1] = angles1
+
+        angles = cs.if_else(case == 0, angles_case_0, angles_case_else)
+
+        if not symmetric:
+            angles[angle_third] *= sign
+            angles[1] -= pi * 0.5
+
+        for i in range(3):
+            angles[i] += cs.if_else(
+                angles[i] < -pi, 2.0 * pi, cs.if_else(angles[i] > pi, -2.0 * pi, 0.0)
+            )
+
+        if not angles.is_symbolic():
+            angles = cs.DM(angles)
+
+        if degrees:
+            angles = rad2deg(angles)
+
+        return angles
 
 
 class Translation:
