@@ -1,7 +1,10 @@
 import casadi as cs
 from typing import Union
 
+
+## CasADi array types.
 ArrayType = Union[cs.DM, cs.SX]
+
 
 def deg2rad(x: ArrayType) -> ArrayType:
     """! Convert degrees to radians.
@@ -22,7 +25,7 @@ def rad2deg(x: ArrayType) -> ArrayType:
 
 
 class Rotation:
-    def __init__(self, quat: ArrayType, normalize: bool=True):
+    def __init__(self, quat: ArrayType, normalize: bool = True):
         """! Initializer for the Rotation class.
 
         @param quat Quaternion representing the rotation.
@@ -66,18 +69,100 @@ class Rotation:
     def from_matrix(matrix: ArrayType):
         """! Initialize from rotation matrix.
 
-        @param matrix A single 3-by-3 rotation matrix or 4-by-4 homogeneous transformation matrix.
+        @param matrix A 3-by-3 rotation matrix or 4-by-4 homogeneous transformation matrix.
         @return Object containing the rotation represented by the rotation matrix.
         """
-        matrix = cs.horzcat(matrix)[:3, :3]  # ensure matrix is 3-by-3 and in casadi format
+        matrix = cs.horzcat(matrix)[
+            :3, :3
+        ]  # ensure matrix is 3-by-3 and in casadi format
+
+        decision = cs.vertcat(
+            matrix[0, 0],
+            matrix[1, 1],
+            matrix[2, 2],
+            matrix[0, 0] + matrix[1, 1] + matrix[2, 2],
+        )
+
+        true_case_3 = cs.vertcat(
+            matrix[2, 1] - matrix[1, 2],
+            matrix[0, 2] - matrix[2, 0],
+            matrix[1, 0] - matrix[0, 1],
+            1.0 + decision[3],
+        )
+
+        def alt_true_case(i, j, k):
+            return cs.vertcat(
+                1.0 - decision[3] + 2 * matrix[i, i],
+                matrix[j, i] + matrix[i, j],
+                matrix[k, i] + matrix[i, k],
+                matrix[k, j] - matrix[j, k],
+            )
+
+        max_decision = cs.fmax(decision)
+        quat = cs.if_else(
+            max_decision == decision[3],
+            true_case_3,
+            cs.if_else(
+                max_decision == decision[2],
+                alt_true_case(2, 0, 1),
+                cs.if_else(
+                    max_decision == decision[1],
+                    alt_true_case(1, 2, 0),
+                    alt_true_case(0, 1, 2),
+                ),
+            ),
+        )
+
+        return Rotation(quat)
 
     @staticmethod
-    def from_rotvec(rotvec, degrees=False):
-        pass
+    def from_rotvec(rotvec: ArrayType, degrees: bool = False):
+        """! Initialize from rotation vectors.
+
+        @param rotvec A 3-dimensional rotation vector
+        @param degrees If True, then the given magnitudes are assumed to be in degrees. Default is False.
+        """
+
+        rotvec = cs.vec(rotvec)
+        n = rotvec.shape[0]
+        assert n == 3, f"expected rotvec to be 3-dimensional, got {n}"
+
+        if degrees:
+            rotvec = deg2rad(rotvec)
+
+        angle = cs.norm_fro(rotvec)
+
+        scale = cs.if_else(
+            angle <= 1e-3,
+            0.5 - angle**2 / 48.0 + angle**2 * angle**2 / 3840.0,
+            cs.sin(0.5 * angle) / angle,
+        )
+
+        quat = cs.vertcat(
+            scale * rotvec[0],
+            scale * rotvec[1],
+            scale * rotvec[2],
+            cs.cos(angle * 0.5),
+        )
+
+        return Rotation(quat)
 
     @staticmethod
-    def from_mrp(mrp):
-        pass
+    def from_mrp(mrp: ArrayType):
+        """! Initialize from Modified Rodrigues Parameters (MRPs).
+
+        @param mrp A vector giving the MRP, a 3 dimensional vector co-directional to the axis of rotation and whose magnitude is equal to tan(theta / 4), where theta is the angle of rotation (in radians).
+        """
+        mrp_squared_plus_1 = 1.0 + cs.sumsqr(mrp)
+
+        quat = cs.vertcat(
+            2.0 * mrp[0] / mrp_squared_plus_1,
+            2.0 * mrp[1] / mrp_squared_plus_1,
+            2.0 * mrp[2] / mrp_squared_plus_1,
+            (2.0 - mrp_squared_plus_1) / mrp_squared_plus_1,
+        )
+
+        return Rotation(quat)
 
     @staticmethod
     def from_euler(seq, angles, degrees=False):
