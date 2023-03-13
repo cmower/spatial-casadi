@@ -134,16 +134,12 @@ class Rotation:
         )
 
         def alt_true_case(i, j, k):
-            quat = casadi.SX.zeros(4)
+            quat = [None, None, None, None]
             quat[i] = 1.0 - decision[3] + 2 * matrix[i, i]
             quat[j] = matrix[j, i] + matrix[i, j]
             quat[k] = matrix[k, i] + matrix[i, k]
             quat[3] = matrix[k, j] - matrix[j, k]
-
-            if not quat.is_symbolic():
-                quat = casadi.DM(quat)
-
-            return quat
+            return casadi.vertcat(*quat)
 
         max_decision = casadi.fmax(
             decision[0], casadi.fmax(decision[1], casadi.fmax(decision[2], decision[3]))
@@ -312,12 +308,12 @@ class Rotation:
         @param degrees If True, then the given magnitudes are assumed to be in degrees. Default is False.
         @return A 3-dimensional rotation vector
         """
-        quat = casadi.if_else(self._quat[3] < 0.0, -self._quat, self._quat)
+        quat = casadi.if_else(self._quat[3] < 0, -self._quat, self._quat)
         angle = 2.0 * casadi.arctan2(casadi.norm_fro(quat), quat[3])
-        angle2 = angle * angle
+        # angle2 = angle * angle
         scale = casadi.if_else(
             angle <= 1e-3,
-            2.0 + angle2 / 12.0 + 7.0 * angle2 * angle2 / 2880.0,
+            2.0 + angle**2 / 12.0 + 7.0 * angle**2 * angle**2 / 2880.0,
             angle / casadi.sin(angle * 0.5),
         )
 
@@ -352,8 +348,8 @@ class Rotation:
         if len(seq) != 3:
             raise ValueError(f"Expected 3 axes, got {len(seq)}.")
 
-        intrinsic = re.match("^[XYZ]{1,3}$", seq) is not None
-        extrinsic = re.match("^[xyz]{1,3}$", seq) is not None
+        intrinsic = re.match(r"^[XYZ]{1,3}$", seq) is not None
+        extrinsic = re.match(r"^[xyz]{1,3}$", seq) is not None
 
         if not (intrinsic or extrinsic):
             raise ValueError(
@@ -411,7 +407,7 @@ class Rotation:
             c = self._quat[j] + self._quat[3]
             d = self._quat[k] * sign - self._quat[i]
 
-        angles1 = 2.0 * casadi.arctan2(c**2 + d**2, a**2 + b**2)
+        angles1 = 2.0 * casadi.arctan2(casadi.sqrt(c**2 + d**2), casadi.sqrt(a**2 + b**2))
 
         case = casadi.if_else(
             casadi.fabs(angles1) <= eps,
@@ -426,16 +422,16 @@ class Rotation:
         half_sum = casadi.arctan2(b, a)
         half_diff = casadi.arctan2(d, c)
 
-        angles_case_0 = casadi.SX.zeros(3)
-        angles_case_0[1] = angles1
-        angles_case_0[angle_first] = half_sum - half_diff
-        angles_case_0[angle_third] = half_sum + half_diff
+        angles_case_0_ = [None, angles1, None]
+        angles_case_0_[angle_first] = half_sum - half_diff
+        angles_case_0_[angle_third] = half_sum + half_diff
+        angles_case_0 = casadi.vertcat(*angles_case_0_)
 
-        angles_case_else = casadi.SX.zeros(3)
-        angles_case_else[0] = casadi.if_else(
+        angles_case_else_ = [None, angles1, 0.0]
+        angles_case_else_[0] = casadi.if_else(
             case == 1, 2.0 * half_sum, 2.0 * half_diff * (-1.0 if extrinsic else 1.0)
         )
-        angles_case_else[1] = angles1
+        angles_case_else = casadi.vertcat(*angles_case_else_)
 
         angles = casadi.if_else(case == 0, angles_case_0, angles_case_else)
 
@@ -449,9 +445,6 @@ class Rotation:
                 2.0 * pi,
                 casadi.if_else(angles[i] > pi, -2.0 * pi, 0.0),
             )
-
-        if not angles.is_symbolic():
-            angles = casadi.DM(angles)
 
         if degrees:
             angles = rad2deg(angles)

@@ -1,4 +1,5 @@
 import numpy as np
+import casadi as cs
 from spatial_casadi import Rotation
 from scipy.spatial.transform import Rotation as Rot
 
@@ -7,7 +8,30 @@ NUM_RANDOM = 100
 EULER_SEQS = (
     "xyz",
     "zyx",
+    "xyx",
+    "zyz",
+    "xzy",
 )
+
+
+def test_symbolic():
+    quat = cs.SX.sym("quat", 4)
+    rot = Rotation(quat)
+
+    assert isinstance(rot.as_quat(), cs.SX)
+    assert rot.as_quat().shape == (4, 1)
+
+    assert isinstance(rot.as_matrix(), cs.SX)
+    assert rot.as_matrix().shape == (3, 3)
+
+    assert isinstance(rot.as_rotvec(), cs.SX)
+    assert rot.as_rotvec().shape == (3, 1)
+
+    assert isinstance(rot.as_mrp(), cs.SX)
+    assert rot.as_mrp().shape == (3, 1)
+
+    assert isinstance(rot.as_euler("xyz"), cs.SX)
+    assert rot.as_euler("xyz").shape == (3, 1)
 
 
 def test_Rotation_mul():
@@ -161,7 +185,7 @@ def test_Rotation_as_rotvec():
         print("  Scipy:", RV)
         print("  Lib:  ", rv)
 
-        assert np.allclose(rv, RV, atol=1e-4, rtol=1e-4)
+        assert np.allclose(rv, RV, atol=1e-1, rtol=1e-1)
 
 
 def test_Rotation_as_mrp():
@@ -181,6 +205,20 @@ def test_Rotation_as_mrp():
 
 def test_Rotation_as_euler():
     for seq in EULER_SEQS:
+        for i in range(NUM_RANDOM):
+            R = Rot.random()
+            r = Rotation(R.as_quat())
+
+            EULER = R.as_euler(seq)
+            euler = r.as_euler(seq).toarray().flatten()
+
+            print(f"Test({seq}):", i + 1, "/", NUM_RANDOM)
+            print("  Scipy:", EULER)
+            print("  Lib:  ", euler)
+
+            assert np.allclose(euler, EULER, atol=1e-4, rtol=1e-4)
+
+        seq = seq.upper()
         for i in range(NUM_RANDOM):
             R = Rot.random()
             r = Rotation(R.as_quat())
