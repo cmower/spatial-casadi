@@ -15,4 +15,6 @@ In a new terminal:
    - (https) `$ git clone https://github.com/cmower/spatial-casadi.git`
 2. Change directory: `$ cd spatial-casadi`
 3. Ensure `pip` is up-to-date: `$ python -m pip install --upgrade pip`
-3. Install from source: `$ pip install .`
+3. Install from source:
+   - (main library) `$ pip install .`
+   - (when you want to run the tests) `$ pip install .[test]`

@@ -18,4 +18,5 @@ setup(
     license="LGPL-3.0 license",
     packages=["spatial_casadi"],
     install_requires=["casadi"],
+    extras_require={'test': ['pytest', 'numpy', 'scipy']},
 )
