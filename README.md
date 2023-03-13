@@ -24,6 +24,13 @@ In a new terminal:
    - (main library) `$ pip install .`
    - (when you want to also run the test scripts) `$ pip install .[test]`
 
+
+# Running the test scripts
+
+1. Install `spatial-casadi` from source and ensure you install the `test` packages (see previous section).
+2. Change directory: `$ cd /path/to/spatial-casadi`
+3. Run tests: `pytest`
+
 # Build documentation
 
 In a new terminal:
