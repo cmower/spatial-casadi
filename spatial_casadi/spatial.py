@@ -250,8 +250,8 @@ class Rotation:
 
         @param seq Specifies sequence of axes for rotations. Up to 3 characters belonging to the set {‘X’, ‘Y’, ‘Z’} for intrinsic rotations, or {‘x’, ‘y’, ‘z’} for extrinsic rotations. Extrinsic and intrinsic rotations cannot be mixed in one function call.
         @param angles Euler angles specified in radians (degrees is False) or degrees (degrees is True). For a single character seq, angles can be:
-            - a single value.
-            - array_like with shape (N,), where each angle[i] corresponds to a single rotation.
+                    - a single value.
+                    - array_like with shape (N,), where each angle[i] corresponds to a single rotation.
         @param degrees If True, then the given angles are assumed to be in degrees. Default is False.
         @return Object containing the rotation represented by the rotation around given axes with given angles.
         """

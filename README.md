@@ -8,9 +8,17 @@ The library interface is partially based on the [Scipy spatial module](https://d
 
 - Code: [https://github.com/cmower/spatial-casadi](https://github.com/cmower/spatial-casadi)
 - Documentation: [https://cmower.github.io/spatial-casadi/](https://cmower.github.io/spatial-casadi/)
+- PyPI: [https://pypi.org/project/spatial-casadi/1.0.0/](https://pypi.org/project/spatial-casadi/1.0.0/)
 - Issues: [https://github.com/cmower/spatial-casadi/issues](https://github.com/cmower/spatial-casadi/issues)
 
 # Install
+
+## From PyPI
+
+```shell
+$ pip install spatial-casadi
+$ pip install spatial-casadi[test] # if you want to run the test scripts
+```
 
 ## From source
 
@@ -23,7 +31,6 @@ In a new terminal:
 3. Install from source:
    - (main library) `$ pip install .`
    - (when you want to also run the test scripts) `$ pip install .[test]`
-
 
 # Running the test scripts
 
@@ -53,7 +60,7 @@ If you use `spatial-casadi` in your work, please consider citing the following.
 
 ```bibtex
 @software{Mower2023
-  title="Spatial CasADi: A Compact Library for Manipulating Spatial Transformations",
+  title = "Spatial CasADi: A Compact Library for Manipulating Spatial Transformations",
   author = "Christopher E. Mower",
   year="2023",
   url = {https://github.com/cmower/spatial-casadi},
