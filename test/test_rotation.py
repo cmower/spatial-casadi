@@ -121,10 +121,24 @@ def test_Rotation_from_mrp():
 
 
 def test_Rotation_from_euler():
-
     for seq in EULER_SEQS:
         for i in range(NUM_RANDOM):
+            R = Rot.random()
+            r = Rotation.from_euler(seq, R.as_euler(seq))
 
+            Q = R.as_quat()
+            q = r.as_quat().toarray().flatten()
+
+            print(f"Test ({seq}):", i + 1, "/", NUM_RANDOM)
+            print("  Scipy:", Q)
+            print("  Lib:  ", q)
+
+            test1 = np.allclose(q, Q)
+            test2 = np.allclose(-q, Q)
+            assert test1 or test2
+
+        seq = seq.upper()
+        for i in range(NUM_RANDOM):
             R = Rot.random()
             r = Rotation.from_euler(seq, R.as_euler(seq))
 

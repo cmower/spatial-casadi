@@ -35,9 +35,9 @@ def test_Transformation_from_matrix():
 
         assert np.allclose(t, T)
 
+
 def test_Transformation_mul():
     for i in range(NUM_RANDOM):
-
         ta = Transformation.random()
         tb = Transformation.random()
 

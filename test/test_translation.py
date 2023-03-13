@@ -3,6 +3,7 @@ from spatial_casadi import Translation, Transformation, Rotation
 
 NUM_RANDOM = 100
 
+
 def test_Translation_add():
     for _ in range(NUM_RANDOM):
         ta = Translation.random()

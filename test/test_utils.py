@@ -21,4 +21,3 @@ def test_rad2deg():
     for _ in range(NUM_RANDOM):
         xr = np.random.normal(size=(10,))
         assert np.allclose(fun(xr).toarray().flatten(), np.rad2deg(xr))
-    

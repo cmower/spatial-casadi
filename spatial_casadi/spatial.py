@@ -63,9 +63,7 @@ def _elementary_quat_compose(seq, angles, intrinsic):
         if intrinsic:
             result = _compose_quat(result, _make_elementary_quat(seq[idx], angles[idx]))
         else:
-            result = _compose_quat(
-                _make_elementary_quat(seq[idx], angles[idx]), result
-            )
+            result = _compose_quat(_make_elementary_quat(seq[idx], angles[idx]), result)
     return result
 
 
