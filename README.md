@@ -17,4 +17,4 @@ In a new terminal:
 3. Ensure `pip` is up-to-date: `$ python -m pip install --upgrade pip`
 3. Install from source:
    - (main library) `$ pip install .`
-   - (when you want to run the tests) `$ pip install .[test]`
+   - (when you want to also run the test scripts) `$ pip install .[test]`
