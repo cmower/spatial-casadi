@@ -51,6 +51,7 @@ class Rotation:
         @param other Object containing the rotation or translation to be composed with this one. Note that compositions are not commutative, so p * q is different from q * p. In the case of translations q * p is undefined.
         @return The product A * B, if other is a rotation the output will be a rotation. However, if other is a translation then the output will also be a translation.
         """
+        # DEV NOTE: this computes self * other
         if isinstance(other, Rotation):
             pass
         elif isinstance(other, Translation):
@@ -257,6 +258,7 @@ class Translation:
         @param other Object containing the translation to be composed with this one.
         @return The translation that is the result of A + B.
         """
+        # DEV NOTE: this computes self + other
         return Translation(self.as_vector() + other.as_vector())
 
     def __neg__(self):
@@ -272,6 +274,7 @@ class Translation:
         @param other Object containing the translation to be composed with this one via subtraction.
         @return The translation that is the result of A - B.
         """
+        # DEV NOTE: this computes self - other
         return Translation(self.as_vector() - other.as_vector())
 
     @staticmethod
