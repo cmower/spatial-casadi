@@ -141,7 +141,10 @@ class Rotation:
                 matrix[k, j] - matrix[j, k],
             )
 
-        max_decision = cs.fmax(decision)
+        max_decision = cs.fmax(
+            decision[0], cs.fmax(decision[1], cs.fmax(decision[2], decision[3]))
+        )
+
         quat = cs.if_else(
             max_decision == decision[3],
             true_case_3,
@@ -372,11 +375,11 @@ class Rotation:
             angle_third = 0
 
         def elementary_basis_index(axis):
-            if axis == b"x":
+            if axis == "x":
                 return 0
-            elif axis == b"y":
+            elif axis == "y":
                 return 1
-            elif axis == b"z":
+            elif axis == "z":
                 return 2
 
         i = elementary_basis_index(seq[0])
@@ -503,7 +506,7 @@ class Translation:
         return Translation(cs.np.random.normal(size=(3,)))
 
     @staticmethod
-    def from_vector(self, t):
+    def from_vector(t):
         """! Initialize from translation vector.
 
         @param t A 3-dimensional translation vector.
@@ -534,7 +537,7 @@ class Translation:
         """
         return self.as_transformation().as_matrix()
 
-    def as_transformation(self) -> Transformation:
+    def as_transformation(self):
         """! Represent as homogenous transformation.
 
         @return A instance of the Transformation class with identity rotation.
@@ -595,7 +598,7 @@ class Transformation:
         @param matrix A 4-by-4 homogeneous transformation matrix.
         @return Object containing the homogeneous transformation represented by the matrix.
         """
-        return Transformation(Rotation.from_matrix(T), Translation.from_matrix(T))
+        return Transformation(Rotation.from_matrix(T[:3, :3]), Translation.from_matrix(T))
 
     def as_matrix(self) -> ArrayType:
         """! Represent as homogenous transformation matrix.
