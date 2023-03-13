@@ -1,3 +1,5 @@
+"""! @brief Main implementation of several data structures and helper functions for spatial transformations in CasADi."""
+
 import casadi as cs
 from typing import Union
 
@@ -44,12 +46,19 @@ class Rotation:
         self._quat = quat
 
     def __mul__(self, other):
+        """! Compose this rotation with the other.
+
+        @param other Object containing the rotation or translation to be composed with this one. Note that compositions are not commutative, so p * q is different from q * p. In the case of translations q * p is undefined.
+        @return The product A * B, if other is a rotation the output will be a rotation. However, if other is a translation then the output will also be a translation.
+        """
         if isinstance(other, Rotation):
             pass
         elif isinstance(other, Translation):
             pass
         else:
-            raise TypeError("")
+            raise TypeError(
+                f"The input type for the other object is not recognized, expected either 'Rotation' or 'Translation', got '{type(other)}'."
+            )
 
     @staticmethod
     def identity():
@@ -174,25 +183,57 @@ class Rotation:
 
     @staticmethod
     def from_euler(seq, angles, degrees=False):
+        """! Initialize from Euler angles.
+
+        @param seq Specifies sequence of axes for rotations. Up to 3 characters belonging to the set {‘X’, ‘Y’, ‘Z’} for intrinsic rotations, or {‘x’, ‘y’, ‘z’} for extrinsic rotations. Extrinsic and intrinsic rotations cannot be mixed in one function call.
+        @param angles Euler angles specified in radians (degrees is False) or degrees (degrees is True). For a single character seq, angles can be:
+            - a single value.
+            - array_like with shape (N,), where each angle[i] corresponds to a single rotation.
+        @param degrees If True, then the given angles are assumed to be in degrees. Default is False.
+        @return Object containing the rotation represented by the rotation around given axes with given angles.
+        """
         pass
 
     #
     # As methods
     #
 
-    def as_quat(self):
+    def as_quat(self) -> ArrayType:
+        """! Represent as quaternions.
+
+        @return A quaternion vector.
+        """
         return self._quat
 
-    def as_matrix(self):
+    def as_matrix(self) -> ArrayType:
+        """! Represent as rotation matrix.
+
+        @return A 3-by-3 rotation matrix.
+        """
         pass
 
-    def as_rotvec(self, degrees=False):
+    def as_rotvec(self, degrees: bool = False) -> ArrayType:
+        """! Represent as rotation vector.
+
+        @param degrees If True, then the given magnitudes are assumed to be in degrees. Default is False.
+        @return A 3-dimensional rotation vector
+        """
         pass
 
-    def as_mrp(self):
+    def as_mrp(self) -> ArrayType:
+        """! Represent as Modified Rodrigues Parameters (MRPs).
+
+        @return A vector giving the MRP, a 3 dimensional vector co-directional to the axis of rotation and whose magnitude is equal to tan(theta / 4), where theta is the angle of rotation (in radians).
+        """
         pass
 
-    def as_euler(self, seq, degrees=False):
+    def as_euler(self, seq: str, degrees: bool = False) -> ArrayType:
+        """! Represent as Euler angles.
+
+        @param seq Specifies sequence of axes for rotations. Up to 3 characters belonging to the set {‘X’, ‘Y’, ‘Z’} for intrinsic rotations, or {‘x’, ‘y’, ‘z’} for extrinsic rotations. Extrinsic and intrinsic rotations cannot be mixed in one function call.
+        @param degrees Returned angles are in degrees if this flag is True, else they are in radians. Default is False.
+        @return Euler angles specified in radians (degrees is False) or degrees (degrees is True).
+        """
         pass
 
 
@@ -217,6 +258,21 @@ class Translation:
         @return The translation that is the result of A + B.
         """
         return Translation(self.as_vector() + other.as_vector())
+
+    def __neg__(self):
+        """! Negated translation.
+
+        @return The translation that is the negation of this translation, i.e. -t.
+        """
+        return Translation(-self.as_vector())
+
+    def __sub__(self, other):
+        """! Compose this translation with the other via vector subtraction.
+
+        @param other Object containing the translation to be composed with this one via subtraction.
+        @return The translation that is the result of A - B.
+        """
+        return Translation(self.as_vector() - other.as_vector())
 
     @staticmethod
     def from_vector(self, t):
