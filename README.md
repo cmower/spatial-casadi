@@ -4,6 +4,7 @@
 
 This package implements various data structures and helper methods for manipulating spatial transformations using [CasADi](https://web.casadi.org/) variables in Python.
 The library interface is partially based on the [Scipy spatial module](https://docs.scipy.org/doc/scipy/reference/spatial.html).
+Each class/method is documented, you can find full documentation here.
 
 # Install
 
