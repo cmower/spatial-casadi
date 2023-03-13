@@ -68,7 +68,7 @@ class Rotation:
                 p[3] * q[2] + q[3] * p[2] + cross[2],
                 p[3] * q[3] - p[0] * q[0] - p[1] * q[1] - p[2] * q[2],
             )
-            return Rotation(r)
+            return Rotation(r, normalize=not isinstance(r, casadi.SX))
 
         elif isinstance(other, Translation):
             return Translation(self.as_matrix() @ other.as_vector())
@@ -93,7 +93,10 @@ class Rotation:
 
     def inv(self):
         """! Invert this rotation."""
-        return Rotation(casadi.vertcat(self._quat[:-1], -self._quat[-1]))
+        return Rotation(
+            casadi.vertcat(self._quat[:-1], -self._quat[-1]),
+            normalize=not isinstance(self._quat, casadi.SX),
+        )
 
     #
     # From methods
@@ -106,7 +109,7 @@ class Rotation:
         @param quat Quaternion in scalar-last (x, y, z, w) format. The quaternion will be normalized to unit norm.
         @return Object containing the rotation represented by the input quaternion.
         """
-        return Rotation(quat)
+        return Rotation(quat, normalize=not isinstance(quat, casadi.SX))
 
     @staticmethod
     def from_matrix(matrix: ArrayType):
@@ -159,7 +162,7 @@ class Rotation:
             ),
         )
 
-        return Rotation(quat)
+        return Rotation(quat, normalize=not isinstance(quat, casadi.SX))
 
     @staticmethod
     def from_rotvec(rotvec: ArrayType, degrees: bool = False):
@@ -191,7 +194,7 @@ class Rotation:
             casadi.cos(angle * 0.5),
         )
 
-        return Rotation(quat)
+        return Rotation(quat, normalize=not isinstance(quat, casadi.SX))
 
     @staticmethod
     def from_mrp(mrp: ArrayType):
@@ -208,7 +211,7 @@ class Rotation:
             (2.0 - mrp_squared_plus_1) / mrp_squared_plus_1,
         )
 
-        return Rotation(quat)
+        return Rotation(quat, normalize=not isinstance(mrp, casadi.SX))
 
     @staticmethod
     def from_euler(seq, angles, degrees=False):
@@ -221,6 +224,7 @@ class Rotation:
         @param degrees If True, then the given angles are assumed to be in degrees. Default is False.
         @return Object containing the rotation represented by the rotation around given axes with given angles.
         """
+
         num_axes = len(seq)
         if num_axes < 1 or num_axes > 3:
             raise ValueError(
@@ -228,8 +232,8 @@ class Rotation:
                 "string of upto 3 characters, got {}".format(seq)
             )
 
-        intrinsic = re.match("^[XYZ]{1,3}$", seq) is not None
-        extrinsic = re.match("^[xyz]{1,3}$", seq) is not None
+        intrinsic = re.match(r"^[XYZ]{1,3}$", seq) is not None
+        extrinsic = re.match(r"^[xyz]{1,3}$", seq) is not None
         if not (intrinsic or extrinsic):
             raise ValueError(
                 "Expected axes from `seq` to be from ['x', 'y', "
@@ -243,10 +247,12 @@ class Rotation:
 
         seq = seq.lower()
 
-        ## TODO
-
         if degrees:
             angles = deg2rad(angles)
+
+        quat = elementary_quat_compose(seq, angles, intrinsic)
+
+        return Rotation(quat, normalize=not isinstance(quat, casadi.SX))
 
     #
     # As methods
