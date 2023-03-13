@@ -11,6 +11,44 @@ The library interface is partially based on the [Scipy spatial module](https://d
 - PyPI: [https://pypi.org/project/spatial-casadi/1.0.0/](https://pypi.org/project/spatial-casadi/1.0.0/)
 - Issues: [https://github.com/cmower/spatial-casadi/issues](https://github.com/cmower/spatial-casadi/issues)
 
+# Examples
+
+There are three main data structures: [Rotation](https://cmower.github.io/spatial-casadi/classspatial__casadi_1_1spatial_1_1Rotation.html), [Translation](https://cmower.github.io/spatial-casadi/classspatial__casadi_1_1spatial_1_1Translation.html), and [Transformation](https://cmower.github.io/spatial-casadi/classspatial__casadi_1_1spatial_1_1Transformation.html).
+The following showcases some of the main functionality of the library.
+
+```
+>>> import spatial_casadi as sc
+>>> import casadi as cs
+>>> euler = cs.SX.sym("euler", 3)
+>>> sc.Rotation.from_euler('xyz', euler).as_quat()
+SX(@1=2, @2=cos((x_2/@1)), @3=cos((x_1/@1)), @4=sin((x_0/@1)), @5=(@3*@4), @6=sin((x_2/@1)), @7=cos((x_0/@1)), @8=sin((x_1/@1)), @9=(@7*@8), @10=(@3*@7), @11=(@8*@4), [((@2*@5)-(@6*@9)), ((@2*@9)+(@6*@5)), ((@10*@6)-(@2*@11)), ((@2*@10)+(@6*@11))])
+>>> r = sc.Rotation.random()
+>>> r.as_quat()
+DM([-0.172177, 0.248674, 0.642138, -0.704397])
+>>> r.as_rotvec()
+DM([0.403149, -0.582264, -1.50355])
+>>> r.as_matrix()
+DM(
+[[0.0516394, 0.819008, -0.571453],
+ [-0.990272, 0.116026, 0.0768034],
+ [0.129206, 0.561928, 0.817033]])
+>>> r.as_euler('xyz')
+DM([0.602468, -0.129568, -1.5187])
+>>> r.as_mrp()
+DM([0.10102, -0.145901, -0.376754])
+>>> sc.Rotation.from_euler('x', 90, degrees=True).as_matrix()
+DM(
+[[1, 0, 0],
+ [0, 2.22045e-16, -1],
+ [0, 1, 2.22045e-16]])
+>>> r1.as_quat()
+DM([0.192977, 0.820457, 0.443494, -0.304832])
+>>> r2.as_quat()
+DM([-0.671078, -0.129029, 0.686258, 0.24911])
+>>> (r1 * r2).as_quat()
+DM([0.872907, -0.186335, 0.426977, -0.144922])
+```
+
 # Install
 
 ## From PyPI
