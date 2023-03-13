@@ -407,7 +407,9 @@ class Rotation:
             c = self._quat[j] + self._quat[3]
             d = self._quat[k] * sign - self._quat[i]
 
-        angles1 = 2.0 * casadi.arctan2(casadi.sqrt(c**2 + d**2), casadi.sqrt(a**2 + b**2))
+        angles1 = 2.0 * casadi.arctan2(
+            casadi.sqrt(c**2 + d**2), casadi.sqrt(a**2 + b**2)
+        )
 
         case = casadi.if_else(
             casadi.fabs(angles1) <= eps,
