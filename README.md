@@ -37,7 +37,7 @@ In a new terminal:
 
 # Citing
 
-If you use `spatial_casadi` in your work, please consider citing the following.
+If you use `spatial-casadi` in your work, please consider citing the following.
 
 ```bibtex
 @software{Mower2023
