@@ -9,6 +9,7 @@ The library interface is partially based on the [Scipy spatial module](https://d
 
 ## From source
 
+In a new terminal:
 1. Clone repository:
    - (ssh) `$ git clone git@github.com:cmower/spatial-casadi.git`, or
    - (https) `$ git clone https://github.com/cmower/spatial-casadi.git`
