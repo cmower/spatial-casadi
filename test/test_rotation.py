@@ -120,22 +120,24 @@ def test_Rotation_from_mrp():
         assert test1 or test2
 
 
-# def test_Rotation_from_euler():
+def test_Rotation_from_euler():
 
-#     for seq in seqs:
-#         for i in range(NUM_RANDOM):
+    for seq in EULER_SEQS:
+        for i in range(NUM_RANDOM):
 
-#             R = Rot.random()
-#             r = Rotation.from_euler(seq, R.as_euler(seq))
+            R = Rot.random()
+            r = Rotation.from_euler(seq, R.as_euler(seq))
 
-#             Q = R.as_quat()
-#             q = r.as_quat().toarray().flatten()
+            Q = R.as_quat()
+            q = r.as_quat().toarray().flatten()
 
-#             print(f"Test ({seq}):", i + 1, "/", NUM_RANDOM)
-#             print("  Scipy:", Q)
-#             print("  Lib:  ", q)
+            print(f"Test ({seq}):", i + 1, "/", NUM_RANDOM)
+            print("  Scipy:", Q)
+            print("  Lib:  ", q)
 
-#             assert np.allclose(q, Q)
+            test1 = np.allclose(q, Q)
+            test2 = np.allclose(-q, Q)
+            assert test1 or test2
 
 
 def test_Rotation_as_quat():

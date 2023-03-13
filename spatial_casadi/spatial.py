@@ -30,6 +30,45 @@ def rad2deg(x: ArrayType) -> ArrayType:
     return (180.0 / pi) * x
 
 
+def _make_elementary_quat(axis, angles):
+    quat = [0.0, 0.0, 0.0, 0.0]
+
+    if axis == "x":
+        axis_ind = 0
+    elif axis == "y":
+        axis_ind = 1
+    elif axis == "z":
+        axis_ind = 2
+
+    quat[3] = casadi.cos(angles / 2.0)
+    quat[axis_ind] = casadi.sin(angles / 2.0)
+
+    return casadi.vertcat(*quat)
+
+
+def _compose_quat(p, q):
+    cross = casadi.cross(p[:3], q[:3])
+    return casadi.vertcat(
+        p[3] * q[0] + q[3] * p[0] + cross[0],
+        p[3] * q[1] + q[3] * p[1] + cross[1],
+        p[3] * q[2] + q[3] * p[2] + cross[2],
+        p[3] * q[3] - p[0] * q[0] - p[1] * q[1] - p[2] * q[2],
+    )
+
+
+def _elementary_quat_compose(seq, angles, intrinsic):
+    result = _make_elementary_quat(seq[0], angles[0])
+    seq_len = len(seq)
+    for idx in range(1, seq_len):
+        if intrinsic:
+            result = _compose_quat(result, _make_elementary_quat(seq[idx], angles[idx]))
+        else:
+            result = _compose_quat(
+                _make_elementary_quat(seq[idx], angles[idx]), result
+            )
+    return result
+
+
 class Rotation:
     """! A class for representing spatial rotations."""
 
@@ -61,13 +100,7 @@ class Rotation:
         if isinstance(other, Rotation):
             p = self.as_quat()
             q = other.as_quat()
-            cross = casadi.cross(p[:3], q[:3])
-            r = casadi.vertcat(
-                p[3] * q[0] + q[3] * p[0] + cross[0],
-                p[3] * q[1] + q[3] * p[1] + cross[1],
-                p[3] * q[2] + q[3] * p[2] + cross[2],
-                p[3] * q[3] - p[0] * q[0] - p[1] * q[1] - p[2] * q[2],
-            )
+            r = _compose_quat(p, q)
             return Rotation(r, normalize=not isinstance(r, casadi.SX))
 
         elif isinstance(other, Translation):
@@ -250,7 +283,7 @@ class Rotation:
         if degrees:
             angles = deg2rad(angles)
 
-        quat = elementary_quat_compose(seq, angles, intrinsic)
+        quat = _elementary_quat_compose(seq, angles, intrinsic)
 
         return Rotation(quat, normalize=not isinstance(quat, casadi.SX))
 
