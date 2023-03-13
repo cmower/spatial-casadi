@@ -22,7 +22,11 @@ def test_Rotation_mul():
 
         result_test = R1 * R2
 
-        assert np.allclose(result.as_quat().toarray().flatten(), result_test.as_quat())
+        test1 = np.allclose(result.as_quat().toarray().flatten(), result_test.as_quat())
+        test2 = np.allclose(
+            -result.as_quat().toarray().flatten(), result_test.as_quat()
+        )
+        assert test1 or test2
 
 
 def test_Rotation_identity():
@@ -50,7 +54,10 @@ def test_Rotation_from_matrix():
         print("  Scipy:", Q)
         print("  Lib:  ", q)
 
-        assert np.allclose(q, Q, atol=1e-4, rtol=1e-4)
+        test1 = np.allclose(q, Q, atol=1e-4, rtol=1e-4)
+        test2 = np.allclose(-q, Q, atol=1e-4, rtol=1e-4)
+
+        assert test1 or test2
 
 
 def test_Rotation_from_rotvec():
@@ -65,7 +72,10 @@ def test_Rotation_from_rotvec():
         print("  Scipy:", Q)
         print("  Lib:  ", q)
 
-        assert np.allclose(q, Q, atol=1e-4, rtol=1e-4)
+        test1 = np.allclose(q, Q, atol=1e-4, rtol=1e-4)
+        test2 = np.allclose(-q, Q, atol=1e-4, rtol=1e-4)
+
+        assert test1 or test2
 
 
 def test_Rotation_from_mrp():
@@ -80,7 +90,10 @@ def test_Rotation_from_mrp():
         print("  Scipy:", Q)
         print("  Lib:  ", q)
 
-        assert np.allclose(q, Q, atol=1e-4, rtol=1e-4)
+        test1 = np.allclose(q, Q, atol=1e-4, rtol=1e-4)
+        test2 = np.allclose(-q, Q, atol=1e-4, rtol=1e-4)
+
+        assert test1 or test2
 
 
 # def test_Rotation_from_euler():

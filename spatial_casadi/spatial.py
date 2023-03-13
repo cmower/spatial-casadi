@@ -134,12 +134,16 @@ class Rotation:
         )
 
         def alt_true_case(i, j, k):
-            return casadi.vertcat(
-                1.0 - decision[3] + 2 * matrix[i, i],
-                matrix[j, i] + matrix[i, j],
-                matrix[k, i] + matrix[i, k],
-                matrix[k, j] - matrix[j, k],
-            )
+            quat = casadi.SX.zeros(4)
+            quat[i] = 1.0 - decision[3] + 2 * matrix[i, i]
+            quat[j] = matrix[j, i] + matrix[i, j]
+            quat[k] = matrix[k, i] + matrix[i, k]
+            quat[3] = matrix[k, j] - matrix[j, k]
+
+            if not quat.is_symbolic():
+                quat = casadi.DM(quat)
+
+            return quat
 
         max_decision = casadi.fmax(
             decision[0], casadi.fmax(decision[1], casadi.fmax(decision[2], decision[3]))
@@ -562,7 +566,7 @@ class Transformation:
 
     def inv(self):
         """! Invert this homogeneous transformation."""
-        R = self._rotation.inv().as_matrix()
+        R = self._rotation.as_matrix()
         t = self._translation.as_vector()
         return Transformation(Rotation.from_matrix(R.T), Translation(-R.T @ t))
 
