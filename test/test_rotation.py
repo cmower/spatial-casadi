@@ -122,11 +122,6 @@ def test_Rotation_from_mrp():
 
 # def test_Rotation_from_euler():
 
-#     seqs = (
-#         'xyz',
-#         'zyx',
-#     )
-
 #     for seq in seqs:
 #         for i in range(NUM_RANDOM):
 
