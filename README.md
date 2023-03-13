@@ -4,7 +4,11 @@
 
 This package implements various data structures and helper methods for manipulating spatial transformations using [CasADi](https://web.casadi.org/) variables in Python.
 The library interface is partially based on the [Scipy spatial module](https://docs.scipy.org/doc/scipy/reference/spatial.html).
-Each class/method is documented, you can find full documentation here.
+
+
+- Code: [https://github.com/cmower/spatial-casadi](https://github.com/cmower/spatial-casadi)
+- Documentation: [https://cmower.github.io/spatial-casadi/](https://cmower.github.io/spatial-casadi/)
+- Issues: [https://github.com/cmower/spatial-casadi/issues](https://github.com/cmower/spatial-casadi/issues)
 
 # Install
 
