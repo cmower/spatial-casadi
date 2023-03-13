@@ -27,6 +27,8 @@ def rad2deg(x: ArrayType) -> ArrayType:
 
 
 class Rotation:
+    """! A class for representing spatial rotations."""
+
     def __init__(self, quat: ArrayType, normalize: bool = True):
         """! Initializer for the Rotation class.
 
@@ -318,6 +320,8 @@ class Translation:
 
 
 class Transformation:
+    """! A class for representing homogenous transformations."""
+
     def __init__(self, rotation: Rotation, translation: Translation):
         """! Initializer for the Transformation class.
 
