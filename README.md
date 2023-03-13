@@ -34,3 +34,8 @@ In a new terminal:
 	 - `$ cd latex`
 	 - `$ make`
 	 - Open the file called `refman.pdf`
+
+# Contributing
+
+If you have any issues with the library, or find inaccuracies in the documentation please [raise an issue](https://github.com/cmower/spatial-casadi/issues/new/choose).
+I am happy to consider new features if you [fork the library](https://github.com/cmower/spatial-casadi/fork) and submit a pull request.
