@@ -1,0 +1,7 @@
+cff-version: 1.2.0
+message: "If you use `spatial_casadi` in your work, please consider citing the following."
+authors:
+- family-names: "Mower"
+  given-names: "Christopher E."
+title: "Spatial CasADi: A Compact Library for Manipulating Spatial Transformations"
+url: "https://github.com/cmower/spatial_casadi"

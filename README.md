@@ -35,6 +35,19 @@ In a new terminal:
 	 - `$ make`
 	 - Open the file called `refman.pdf`
 
+# Citing
+
+If you use `spatial_casadi` in your work, please consider citing the following.
+
+```
+@software{Mower2023
+  title="Spatial CasADi: A Compact Library for Manipulating Spatial Transformations",
+  author = "Christopher E. Mower",
+  year="2023",
+  url="https://github.com/cmower/spatial_casadi",
+}
+```
+
 # Contributing
 
 If you have any issues with the library, or find inaccuracies in the documentation please [raise an issue](https://github.com/cmower/spatial-casadi/issues/new/choose).
