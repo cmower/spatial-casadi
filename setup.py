@@ -17,7 +17,5 @@ setup(
     author_email="christopher.mower@kcl.ac.uk",
     license="LGPL-3.0 license",
     packages=["spatial_casadi"],
-    install_requires=[
-        "casadi",
-    ],
+    install_requires=["casadi"],
 )
