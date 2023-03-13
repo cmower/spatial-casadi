@@ -15,7 +15,7 @@ def test_Transformation_inv():
         print("Scipy:\n", INVT)
         print("Lib:\n", invt)
 
-        assert np.allclose(invt, INVT, atol=1e-3, rtol=1e-3)
+        assert np.allclose(invt, INVT)
 
 
 def test_Transformation_identity():
