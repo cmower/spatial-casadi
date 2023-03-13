@@ -2,7 +2,7 @@
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-This package implements various spatial transformations for [CasADi](https://web.casadi.org/) in Python.
+This package implements various data structures and helper methods for manipulating spatial transformations using [CasADi](https://web.casadi.org/) variables in Python.
 The library interface is partially based on the [Scipy spatial module](https://docs.scipy.org/doc/scipy/reference/spatial.html).
 
 # Install
