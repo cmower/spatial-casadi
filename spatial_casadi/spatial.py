@@ -256,6 +256,8 @@ class Rotation:
         @return Object containing the rotation represented by the rotation around given axes with given angles.
         """
 
+        angles = casadi.vec(angles)
+
         num_axes = len(seq)
         if num_axes < 1 or num_axes > 3:
             raise ValueError(
