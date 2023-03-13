@@ -57,7 +57,7 @@ class Rotation:
         if isinstance(other, Rotation):
             pass
         elif isinstance(other, Translation):
-            pass
+            return Translation(self.as_matrix() @ other.as_vector())
         else:
             raise TypeError(
                 f"The input type for the other object is not recognized, expected either 'Rotation' or 'Translation', got '{type(other)}'."
@@ -67,6 +67,14 @@ class Rotation:
     def identity():
         """! Get the identity rotation."""
         return Rotation([0.0, 0.0, 0.0, 1.0])
+
+    @staticmethod
+    def random():
+        """! Generate uniformly distributed rotations.
+
+        @return Random rotation.
+        """
+        return Rotation(cs.np.random.normal(size=(4,)))
 
     def inv(self):
         """! Invert this rotation."""
@@ -213,7 +221,43 @@ class Rotation:
 
         @return A 3-by-3 rotation matrix.
         """
-        pass
+
+        x = self._quat[0]
+        y = self._quat[1]
+        z = self._quat[2]
+        w = self._quat[3]
+
+        x2 = x * x
+        y2 = y * y
+        z2 = z * z
+        w2 = w * w
+
+        xy = x * y
+        zw = z * w
+        xz = x * z
+        yw = y * w
+        yz = y * z
+        xw = x * w
+
+        matrix = cs.horzcat(
+            cs.vertcat(
+                x2 - y2 - z2 + w2,
+                2.0 * (xy + zw),
+                2.0 * (xz - yw),
+            ),
+            cs.vertcat(
+                2.0 * (xy - zw),
+                -x2 + y2 - z2 + w2,
+                2.0 * (yz + xw),
+            ),
+            cs.vertcat(
+                2.0 * (xz + yw),
+                2.0 * (yz - xw),
+                -x2 - y2 + z2 + w2,
+            ),
+        )
+
+        return matrix
 
     def as_rotvec(self, degrees: bool = False) -> ArrayType:
         """! Represent as rotation vector.
@@ -221,14 +265,35 @@ class Rotation:
         @param degrees If True, then the given magnitudes are assumed to be in degrees. Default is False.
         @return A 3-dimensional rotation vector
         """
-        pass
+        quat = cs.if_else(self._quat[3] < 0.0, -self._quat, self._quat)
+        angle = 2.0 * cs.arctan2(cs.norm_fro(quat), quat[3])
+        angle2 = angle * angle
+        scale = cs.if_else(
+            angle <= 1e-3,
+            2.0 + angle2 / 12.0 + 7.0 * angle2 * angle2 / 2880.0,
+            angle / cs.sin(angle * 0.5),
+        )
+
+        rotvec = cs.vertcat(
+            scale * quat[0],
+            scale * quat[1],
+            scale * quat[2],
+        )
+
+        if degrees:
+            rotvec = rad2deg(rotvec)
+
+        return rotvec
 
     def as_mrp(self) -> ArrayType:
         """! Represent as Modified Rodrigues Parameters (MRPs).
 
         @return A vector giving the MRP, a 3 dimensional vector co-directional to the axis of rotation and whose magnitude is equal to tan(theta / 4), where theta is the angle of rotation (in radians).
         """
-        pass
+        sign = cs.if_else(self._quat[3] < 0.0, -1.0, 1.0)
+        denominator = 1.0 + sign * self._quat[3]
+        mrp = sign * self._quat[:3] / denominator
+        return mrp
 
     def as_euler(self, seq: str, degrees: bool = False) -> ArrayType:
         """! Represent as Euler angles.
@@ -278,6 +343,14 @@ class Translation:
         """
         # DEV NOTE: this computes self - other
         return Translation(self.as_vector() - other.as_vector())
+
+    @staticmethod
+    def random():
+        """! Generate uniformly distributed translations.
+
+        @return Random translation.
+        """
+        return Translation(cs.np.random.normal(size=(3,)))
 
     @staticmethod
     def from_vector(self, t):
@@ -351,6 +424,14 @@ class Transformation:
         @return The rotation part of the homogeneous transformation.
         """
         return self._rotation
+
+    @staticmethod
+    def random():
+        """! Generate uniformly distributed homogeneous transforms.
+
+        @return Random homogeneous transform.
+        """
+        return Transformation(Rotation.random(), Translation.random())
 
     @staticmethod
     def from_matrix(T: ArrayType):
