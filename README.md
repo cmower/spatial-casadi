@@ -39,7 +39,7 @@ In a new terminal:
 
 If you use `spatial_casadi` in your work, please consider citing the following.
 
-```
+```bibtex
 @software{Mower2023
   title="Spatial CasADi: A Compact Library for Manipulating Spatial Transformations",
   author = "Christopher E. Mower",
