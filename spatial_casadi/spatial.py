@@ -43,6 +43,14 @@ class Rotation:
 
         self._quat = quat
 
+    def __mul__(self, other):
+        if isinstance(other, Rotation):
+            pass
+        elif isinstance(other, Translation):
+            pass
+        else:
+            raise TypeError("")
+
     @staticmethod
     def identity():
         """! Get the identity rotation."""
@@ -189,28 +197,65 @@ class Rotation:
 
 
 class Translation:
+    """! A class defining a translation vector."""
+
     def __init__(self, t):
+        """! Initializer for the Translation class.
+
+        @param t A 3-dimensional translation vector.
+        @return An instance of the Translation class.
+        """
         self._t = cs.vec(t)
         assert (
             self._t.shape[0] == 3
         ), f"expected translation vector to have length 3, got {self._t.shape[0]}."
 
+    def __add__(self, other):
+        """! Compose this translation with the other via vector addition.
+
+        @param other Object containing the translation to be composed with this one.
+        @return The translation that is the result of A + B.
+        """
+        return Translation(self.as_vector() + other.as_vector())
+
     @staticmethod
     def from_vector(self, t):
+        """! Initialize from translation vector.
+
+        @param t A 3-dimensional translation vector.
+        @return Object containing the translation represented by the input vector.
+        """
         return Translation(t)
 
     @staticmethod
     def from_matrix(T):
+        """! Initialize from a homogenous transformation matrix.
+
+        @param T A 4-by-4 homogenous transformation matrix.
+        @return Object containing the translation represented by the input matrix.
+        """
         return Translation(T[:3, 3])
 
-    def as_vector(self):
+    def as_vector(self) -> ArrayType:
+        """! Represent as a translation vector.
+
+        @return A 3-dimensional translation vector.
+        """
         return self._t
 
-    def as_matrix(self):
-        return cs.vertcat(
-            cs.horzcat(Rotation.identity().as_matrix(), self._t),
-            cs.DM([[0.0, 0.0, 0.0, 1.0]]),
-        )
+    def as_matrix(self) -> ArrayType:
+        """! Represent as homogenous transformation matrix.
+
+        @return A 4-by-4 homogenous transformation matrix.
+        """
+        return self.as_transformation().as_matrix()
+
+    def as_transformation(self) -> Transformation:
+        """! Represent as homogenous transformation.
+
+        @return A instance of the Transformation class with identity rotation.
+        """
+        return Transformation(Rotation.identity(), Translation(self._t))
 
 
 class Transformation:
@@ -241,7 +286,7 @@ class Transformation:
         """! Return the rotation part of the homogeneous transformation.
 
         @return The rotation part of the homogeneous transformation.
-        """        
+        """
         return self._rotation
 
     @staticmethod
@@ -262,3 +307,14 @@ class Transformation:
             cs.horzcat(self._rotation.as_matrix(), self._translation.as_vector()),
             cs.DM([[0.0, 0.0, 0.0, 1.0]]),
         )
+
+    def __mul__(self, other):
+        """! Compose this transformation with the other.
+
+        @param other Object containing the transformation to be composed with this one. Note that transformation compositions are not commutative, so p * q is different from q * p.
+        @return The homgeonous transformation that is the product A * B.
+        """
+        # DEV NOTE: this computes the product self * other
+        rotation = self._rotation * other.rotation()
+        translation = self._rotation * other.translation() + self._translation
+        return Transformation(rotation, translation)
