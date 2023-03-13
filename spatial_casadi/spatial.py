@@ -345,6 +345,11 @@ class Translation:
         return Translation(self.as_vector() - other.as_vector())
 
     @staticmethod
+    def identity():
+        """! Get the identity translation."""
+        return Translation([0.0, 0.0, 0.0])
+
+    @staticmethod
     def random():
         """! Generate uniformly distributed translations.
 
@@ -424,6 +429,11 @@ class Transformation:
         @return The rotation part of the homogeneous transformation.
         """
         return self._rotation
+
+    @staticmethod
+    def identity():
+        """! Get the identity homogenous transform."""
+        return Transformation(Rotation.identity(), Translation.identity())
 
     @staticmethod
     def random():
