@@ -1,15 +1,15 @@
 """! @brief Main implementation of several data structures and helper functions for spatial transformations in CasADi."""
 
 import re
-import casadi as cs
+import casadi
 from typing import Union
 
 
 ## The number pi (i.e. 3.141...)
-pi = cs.np.pi
+pi = casadi.np.pi
 
 ## CasADi array types.
-ArrayType = Union[cs.DM, cs.SX]
+ArrayType = Union[casadi.DM, casadi.SX]
 
 
 def deg2rad(x: ArrayType) -> ArrayType:
@@ -40,14 +40,14 @@ class Rotation:
         @param normalize When true, the quaternion is normalized.
         @return An instance of the Rotation class.
         """
-        quat = cs.vec(quat)
+        quat = casadi.vec(quat)
 
         assert (
             quat.shape[0] == 4
         ), f"Incorrect length for input quaternion. Got {quat.shape[0]}, expected 4!"
 
         if normalize:
-            quat = quat / cs.norm_fro(quat)
+            quat = quat / casadi.norm_fro(quat)
 
         self._quat = quat
 
@@ -61,8 +61,8 @@ class Rotation:
         if isinstance(other, Rotation):
             p = self.as_quat()
             q = other.as_quat()
-            cross = cs.cross(p[:3], q[:3])
-            r = cs.vertcat(
+            cross = casadi.cross(p[:3], q[:3])
+            r = casadi.vertcat(
                 p[3] * q[0] + q[3] * p[0] + cross[0],
                 p[3] * q[1] + q[3] * p[1] + cross[1],
                 p[3] * q[2] + q[3] * p[2] + cross[2],
@@ -89,11 +89,11 @@ class Rotation:
 
         @return Random rotation.
         """
-        return Rotation(cs.np.random.normal(size=(4,)))
+        return Rotation(casadi.np.random.normal(size=(4,)))
 
     def inv(self):
         """! Invert this rotation."""
-        return Rotation(cs.vertcat(self._quat[:-1], -self._quat[-1]))
+        return Rotation(casadi.vertcat(self._quat[:-1], -self._quat[-1]))
 
     #
     # From methods
@@ -115,18 +115,18 @@ class Rotation:
         @param matrix A 3-by-3 rotation matrix or 4-by-4 homogeneous transformation matrix.
         @return Object containing the rotation represented by the rotation matrix.
         """
-        matrix = cs.horzcat(matrix)[
+        matrix = casadi.horzcat(matrix)[
             :3, :3
         ]  # ensure matrix is 3-by-3 and in casadi format
 
-        decision = cs.vertcat(
+        decision = casadi.vertcat(
             matrix[0, 0],
             matrix[1, 1],
             matrix[2, 2],
             matrix[0, 0] + matrix[1, 1] + matrix[2, 2],
         )
 
-        true_case_3 = cs.vertcat(
+        true_case_3 = casadi.vertcat(
             matrix[2, 1] - matrix[1, 2],
             matrix[0, 2] - matrix[2, 0],
             matrix[1, 0] - matrix[0, 1],
@@ -134,24 +134,24 @@ class Rotation:
         )
 
         def alt_true_case(i, j, k):
-            return cs.vertcat(
+            return casadi.vertcat(
                 1.0 - decision[3] + 2 * matrix[i, i],
                 matrix[j, i] + matrix[i, j],
                 matrix[k, i] + matrix[i, k],
                 matrix[k, j] - matrix[j, k],
             )
 
-        max_decision = cs.fmax(
-            decision[0], cs.fmax(decision[1], cs.fmax(decision[2], decision[3]))
+        max_decision = casadi.fmax(
+            decision[0], casadi.fmax(decision[1], casadi.fmax(decision[2], decision[3]))
         )
 
-        quat = cs.if_else(
+        quat = casadi.if_else(
             max_decision == decision[3],
             true_case_3,
-            cs.if_else(
+            casadi.if_else(
                 max_decision == decision[2],
                 alt_true_case(2, 0, 1),
-                cs.if_else(
+                casadi.if_else(
                     max_decision == decision[1],
                     alt_true_case(1, 2, 0),
                     alt_true_case(0, 1, 2),
@@ -169,26 +169,26 @@ class Rotation:
         @param degrees If True, then the given magnitudes are assumed to be in degrees. Default is False.
         """
 
-        rotvec = cs.vec(rotvec)
+        rotvec = casadi.vec(rotvec)
         n = rotvec.shape[0]
         assert n == 3, f"expected rotvec to be 3-dimensional, got {n}"
 
         if degrees:
             rotvec = deg2rad(rotvec)
 
-        angle = cs.norm_fro(rotvec)
+        angle = casadi.norm_fro(rotvec)
 
-        scale = cs.if_else(
+        scale = casadi.if_else(
             angle <= 1e-3,
             0.5 - angle**2 / 48.0 + angle**2 * angle**2 / 3840.0,
-            cs.sin(0.5 * angle) / angle,
+            casadi.sin(0.5 * angle) / angle,
         )
 
-        quat = cs.vertcat(
+        quat = casadi.vertcat(
             scale * rotvec[0],
             scale * rotvec[1],
             scale * rotvec[2],
-            cs.cos(angle * 0.5),
+            casadi.cos(angle * 0.5),
         )
 
         return Rotation(quat)
@@ -199,9 +199,9 @@ class Rotation:
 
         @param mrp A vector giving the MRP, a 3 dimensional vector co-directional to the axis of rotation and whose magnitude is equal to tan(theta / 4), where theta is the angle of rotation (in radians).
         """
-        mrp_squared_plus_1 = 1.0 + cs.sumsqr(mrp)
+        mrp_squared_plus_1 = 1.0 + casadi.sumsqr(mrp)
 
-        quat = cs.vertcat(
+        quat = casadi.vertcat(
             2.0 * mrp[0] / mrp_squared_plus_1,
             2.0 * mrp[1] / mrp_squared_plus_1,
             2.0 * mrp[2] / mrp_squared_plus_1,
@@ -282,18 +282,18 @@ class Rotation:
         yz = y * z
         xw = x * w
 
-        matrix = cs.horzcat(
-            cs.vertcat(
+        matrix = casadi.horzcat(
+            casadi.vertcat(
                 x2 - y2 - z2 + w2,
                 2.0 * (xy + zw),
                 2.0 * (xz - yw),
             ),
-            cs.vertcat(
+            casadi.vertcat(
                 2.0 * (xy - zw),
                 -x2 + y2 - z2 + w2,
                 2.0 * (yz + xw),
             ),
-            cs.vertcat(
+            casadi.vertcat(
                 2.0 * (xz + yw),
                 2.0 * (yz - xw),
                 -x2 - y2 + z2 + w2,
@@ -308,16 +308,16 @@ class Rotation:
         @param degrees If True, then the given magnitudes are assumed to be in degrees. Default is False.
         @return A 3-dimensional rotation vector
         """
-        quat = cs.if_else(self._quat[3] < 0.0, -self._quat, self._quat)
-        angle = 2.0 * cs.arctan2(cs.norm_fro(quat), quat[3])
+        quat = casadi.if_else(self._quat[3] < 0.0, -self._quat, self._quat)
+        angle = 2.0 * casadi.arctan2(casadi.norm_fro(quat), quat[3])
         angle2 = angle * angle
-        scale = cs.if_else(
+        scale = casadi.if_else(
             angle <= 1e-3,
             2.0 + angle2 / 12.0 + 7.0 * angle2 * angle2 / 2880.0,
-            angle / cs.sin(angle * 0.5),
+            angle / casadi.sin(angle * 0.5),
         )
 
-        rotvec = cs.vertcat(
+        rotvec = casadi.vertcat(
             scale * quat[0],
             scale * quat[1],
             scale * quat[2],
@@ -333,7 +333,7 @@ class Rotation:
 
         @return A vector giving the MRP, a 3 dimensional vector co-directional to the axis of rotation and whose magnitude is equal to tan(theta / 4), where theta is the angle of rotation (in radians).
         """
-        sign = cs.if_else(self._quat[3] < 0.0, -1.0, 1.0)
+        sign = casadi.if_else(self._quat[3] < 0.0, -1.0, 1.0)
         denominator = 1.0 + sign * self._quat[3]
         mrp = sign * self._quat[:3] / denominator
         return mrp
@@ -407,45 +407,45 @@ class Rotation:
             c = self._quat[j] + self._quat[3]
             d = self._quat[k] * sign - self._quat[i]
 
-        angles1 = 2.0 * cs.arctan2(c**2 + d**2, a**2 + b**2)
+        angles1 = 2.0 * casadi.arctan2(c**2 + d**2, a**2 + b**2)
 
-        case = cs.if_else(
-            cs.fabs(angles1) <= eps,
+        case = casadi.if_else(
+            casadi.fabs(angles1) <= eps,
             1,
-            cs.if_else(
-                cs.fabs(angles1 - pi) <= eps,
+            casadi.if_else(
+                casadi.fabs(angles1 - pi) <= eps,
                 2,
                 0,
             ),
         )
 
-        half_sum = cs.arctan2(b, a)
-        half_diff = cs.arctan2(d, c)
+        half_sum = casadi.arctan2(b, a)
+        half_diff = casadi.arctan2(d, c)
 
-        angles_case_0 = cs.SX.zeros(3)
+        angles_case_0 = casadi.SX.zeros(3)
         angles_case_0[1] = angles1
         angles_case_0[angle_first] = half_sum - half_diff
         angles_case_0[angle_third] = half_sum + half_diff
 
-        angles_case_else = cs.SX.zeros(3)
-        angles_case_else[0] = cs.if_else(
+        angles_case_else = casadi.SX.zeros(3)
+        angles_case_else[0] = casadi.if_else(
             case == 1, 2.0 * half_sum, 2.0 * half_diff * (-1.0 if extrinsic else 1.0)
         )
         angles_case_else[1] = angles1
 
-        angles = cs.if_else(case == 0, angles_case_0, angles_case_else)
+        angles = casadi.if_else(case == 0, angles_case_0, angles_case_else)
 
         if not symmetric:
             angles[angle_third] *= sign
             angles[1] -= pi * 0.5
 
         for i in range(3):
-            angles[i] += cs.if_else(
-                angles[i] < -pi, 2.0 * pi, cs.if_else(angles[i] > pi, -2.0 * pi, 0.0)
+            angles[i] += casadi.if_else(
+                angles[i] < -pi, 2.0 * pi, casadi.if_else(angles[i] > pi, -2.0 * pi, 0.0)
             )
 
         if not angles.is_symbolic():
-            angles = cs.DM(angles)
+            angles = casadi.DM(angles)
 
         if degrees:
             angles = rad2deg(angles)
@@ -462,7 +462,7 @@ class Translation:
         @param t A 3-dimensional translation vector.
         @return An instance of the Translation class.
         """
-        self._t = cs.vec(t)
+        self._t = casadi.vec(t)
         assert (
             self._t.shape[0] == 3
         ), f"expected translation vector to have length 3, got {self._t.shape[0]}."
@@ -503,7 +503,7 @@ class Translation:
 
         @return Random translation.
         """
-        return Translation(cs.np.random.normal(size=(3,)))
+        return Translation(casadi.np.random.normal(size=(3,)))
 
     @staticmethod
     def from_vector(t):
@@ -605,9 +605,9 @@ class Transformation:
 
         @return A 4-by-4 homogenous transformation matrix.
         """
-        return cs.vertcat(
-            cs.horzcat(self._rotation.as_matrix(), self._translation.as_vector()),
-            cs.DM([[0.0, 0.0, 0.0, 1.0]]),
+        return casadi.vertcat(
+            casadi.horzcat(self._rotation.as_matrix(), self._translation.as_vector()),
+            casadi.DM([[0.0, 0.0, 0.0, 1.0]]),
         )
 
     def __mul__(self, other):
