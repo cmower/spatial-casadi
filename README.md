@@ -18,3 +18,19 @@ In a new terminal:
 3. Install from source:
    - (main library) `$ pip install .`
    - (when you want to also run the test scripts) `$ pip install .[test]`
+
+# Build documentation
+
+In a new terminal:
+1. Clone repository:
+   - (ssh) `$ git clone git@github.com:cmower/spatial-casadi.git`, or
+   - (https) `$ git clone https://github.com/cmower/spatial-casadi.git`
+2. Change directory: `$ cd spatial-casadi/doc`
+3. Install doxygen: `$ sudo apt install doxygen`
+4. Build documentation: `$ doxygen`
+5. View documentation:
+   - In a browser, open `html/index.html`
+   - Build pdf (requires LaTeX)
+	 - `$ cd latex`
+	 - `$ make`
+	 - Open the file called `refman.pdf`
