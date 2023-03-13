@@ -441,7 +441,9 @@ class Rotation:
 
         for i in range(3):
             angles[i] += casadi.if_else(
-                angles[i] < -pi, 2.0 * pi, casadi.if_else(angles[i] > pi, -2.0 * pi, 0.0)
+                angles[i] < -pi,
+                2.0 * pi,
+                casadi.if_else(angles[i] > pi, -2.0 * pi, 0.0),
             )
 
         if not angles.is_symbolic():
@@ -598,7 +600,9 @@ class Transformation:
         @param matrix A 4-by-4 homogeneous transformation matrix.
         @return Object containing the homogeneous transformation represented by the matrix.
         """
-        return Transformation(Rotation.from_matrix(T[:3, :3]), Translation.from_matrix(T))
+        return Transformation(
+            Rotation.from_matrix(T[:3, :3]), Translation.from_matrix(T)
+        )
 
     def as_matrix(self) -> ArrayType:
         """! Represent as homogenous transformation matrix.
