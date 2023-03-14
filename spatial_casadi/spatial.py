@@ -18,7 +18,7 @@ def deg2rad(x: ArrayType) -> ArrayType:
     @param x An array containing angles in degrees.
     @return An array containing angles in radians.
     """
-    return (pi / 180.0) * x
+    return (pi / 180.0) * casadi.horzcat(x)
 
 
 def rad2deg(x: ArrayType) -> ArrayType:
@@ -27,10 +27,10 @@ def rad2deg(x: ArrayType) -> ArrayType:
     @param x An array containing angles in radians.
     @return An array containing angles in degrees.
     """
-    return (180.0 / pi) * x
+    return (180.0 / pi) * casadi.horzcat(x)
 
 
-def _make_elementary_quat(axis, angles):
+def _make_elementary_quat(axis: str, angles: ArrayType) -> ArrayType:
     quat = [0.0, 0.0, 0.0, 0.0]
 
     if axis == "x":
@@ -46,7 +46,7 @@ def _make_elementary_quat(axis, angles):
     return casadi.vertcat(*quat)
 
 
-def _compose_quat(p, q):
+def _compose_quat(p: ArrayType, q: ArrayType) -> ArrayType:
     cross = casadi.cross(p[:3], q[:3])
     return casadi.vertcat(
         p[3] * q[0] + q[3] * p[0] + cross[0],
@@ -56,7 +56,7 @@ def _compose_quat(p, q):
     )
 
 
-def _elementary_quat_compose(seq, angles, intrinsic):
+def _elementary_quat_compose(seq, angles, intrinsic) -> ArrayType:
     result = _make_elementary_quat(seq[0], angles[0])
     seq_len = len(seq)
     for idx in range(1, seq_len):
@@ -233,6 +233,9 @@ class Rotation:
 
         @param mrp A vector giving the MRP, a 3 dimensional vector co-directional to the axis of rotation and whose magnitude is equal to tan(theta / 4), where theta is the angle of rotation (in radians).
         """
+
+        mrp = casadi.vec(mrp)
+
         mrp_squared_plus_1 = 1.0 + casadi.sumsqr(mrp)
 
         quat = casadi.vertcat(
@@ -496,7 +499,7 @@ class Rotation:
 class Translation:
     """! A class defining a translation vector."""
 
-    def __init__(self, t):
+    def __init__(self, t: ArrayType):
         """! Initializer for the Translation class.
 
         @param t A 3-dimensional translation vector.
@@ -561,7 +564,7 @@ class Translation:
         @param T A 4-by-4 homogenous transformation matrix.
         @return Object containing the translation represented by the input matrix.
         """
-        return Translation(T[:3, 3])
+        return Translation(optas.horzcat(T[:3, 3]))
 
     def as_vector(self) -> ArrayType:
         """! Represent as a translation vector.
@@ -595,7 +598,11 @@ class Transformation:
         @param translation The translation part of the homogenous transformation.
         @return An instance of the Transformation class.
         """
+
+        ## Rotation object.
         self._rotation = rotation
+
+        ## Translation object.
         self._translation = translation
 
     def inv(self):
@@ -638,6 +645,7 @@ class Transformation:
         @param matrix A 4-by-4 homogeneous transformation matrix.
         @return Object containing the homogeneous transformation represented by the matrix.
         """
+        T = casadi.horzcat(T)
         return Transformation(
             Rotation.from_matrix(T[:3, :3]), Translation.from_matrix(T)
         )
