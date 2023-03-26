@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "spatial_casadi"
-version = "1.0.0"
+version = "1.0.1"
 authors = [
   { name="Christopher E. Mower", email="christopher.mower@kcl.ac.uk" },
 ]
@@ -19,4 +19,6 @@ classifiers = [
 
 [project.urls]
 "Homepage" = "https://cmower.github.io/spatial-casadi/"
+"Documentation" = "https://cmower.github.io/spatial-casadi/"
 "Bug Tracker" = "https://github.com/cmower/spatial-casadi/issues"
+"Source" = "https://github.com/cmower/spatial-casadi"

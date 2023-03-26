@@ -11,6 +11,7 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/cmower/spatial-casadi",
     project_urls={
+        "Homepage": "https://cmower.github.io/spatial-casadi/",
         "Documentation": "https://cmower.github.io/spatial-casadi/",
         "Bug Tracker": "https://github.com/cmower/spatial-casadi/issues",
         "Source": "https://github.com/cmower/spatial-casadi",
