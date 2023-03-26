@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="doc/spatial-casadi.png" width="60" align="right">
+  <img src="doc/image/spatial-casadi.png" width="60" align="right">
 </p>
 
 # spatial-casadi

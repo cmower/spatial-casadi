@@ -131,3 +131,4 @@ dmypy.json
 # Documentation
 doc/html/
 doc/latex/
+doc/mainpage.md
