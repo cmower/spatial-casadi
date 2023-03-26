@@ -12,7 +12,7 @@ The library interface is partially based on the [Scipy spatial module](https://d
 
 - Code: [https://github.com/cmower/spatial-casadi](https://github.com/cmower/spatial-casadi)
 - Documentation: [https://cmower.github.io/spatial-casadi/](https://cmower.github.io/spatial-casadi/)
-- PyPI: [https://pypi.org/project/spatial-casadi/1.0.0/](https://pypi.org/project/spatial-casadi/1.0.0/)
+- PyPI: [https://pypi.org/project/spatial-casadi](https://pypi.org/project/spatial-casadi/)
 - Issues: [https://github.com/cmower/spatial-casadi/issues](https://github.com/cmower/spatial-casadi/issues)
 
 # Examples
