@@ -564,7 +564,7 @@ class Translation:
         @param T A 4-by-4 homogenous transformation matrix.
         @return Object containing the translation represented by the input matrix.
         """
-        return Translation(optas.horzcat(T[:3, 3]))
+        return Translation(casadi.horzcat(T[:3, 3]))
 
     def as_vector(self) -> ArrayType:
         """! Represent as a translation vector.
