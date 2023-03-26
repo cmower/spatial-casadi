@@ -85,6 +85,9 @@ In a new terminal:
 
 # Build documentation
 
+The documentation is hosted [here](https://cmower.github.io/spatial-casadi/).
+However, if you want to build it yourself, then follow these steps.
+
 In a new terminal:
 1. Clone repository:
    - (ssh) `$ git clone git@github.com:cmower/spatial-casadi.git`, or
