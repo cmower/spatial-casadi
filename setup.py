@@ -6,12 +6,14 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setup(
     name="spatial-casadi",
     description="Spatial transformation library for CasADi Python.",
-    version="1.0.0",
+    version="1.0.1",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/cmower/spatial-casadi",
     project_urls={
+        "Documentation": "https://cmower.github.io/spatial-casadi/",
         "Bug Tracker": "https://github.com/cmower/spatial-casadi/issues",
+        "Source": "https://github.com/cmower/spatial-casadi",
     },
     author="Christopher E. Mower",
     author_email="christopher.mower@kcl.ac.uk",
