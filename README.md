@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="doc/spatial-casadi.png" width="60" align="right">
+</p>
+
 # spatial-casadi
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
