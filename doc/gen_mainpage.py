@@ -3,7 +3,9 @@ import pathlib
 
 class LineFixer:
     def fix(self, line):
-        line = line.replace("doc/image/spatial-casadi.png", "spatial-casadi.png")
+        old_url = "https://raw.githubusercontent.com/cmower/spatial-casadi/master/doc/image/spatial-casadi.png"
+        new_url = "spatial-casadi.png"
+        line = line.replace(old_url, new_url)
         return line
 
 
