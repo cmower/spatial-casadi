@@ -15,8 +15,8 @@ ArrayType = Union[casadi.DM, casadi.SX]
 def deg2rad(x: ArrayType) -> ArrayType:
     """! Convert degrees to radians.
 
-    @param x An array containing angles in degrees.
-    @return An array containing angles in radians.
+@param x An array containing angles in degrees.
+@return An array containing angles in radians.
     """
     return (pi / 180.0) * casadi.horzcat(x)
 
@@ -24,8 +24,8 @@ def deg2rad(x: ArrayType) -> ArrayType:
 def rad2deg(x: ArrayType) -> ArrayType:
     """! Convert radians to degrees.
 
-    @param x An array containing angles in radians.
-    @return An array containing angles in degrees.
+@param x An array containing angles in radians.
+@return An array containing angles in degrees.
     """
     return (180.0 / pi) * casadi.horzcat(x)
 
