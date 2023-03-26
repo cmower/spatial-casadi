@@ -73,9 +73,9 @@ class Rotation:
     def __init__(self, quat: ArrayType, normalize: bool = True):
         """! Initializer for the Rotation class.
 
-        @param quat Quaternion representing the rotation.
-        @param normalize When true, the quaternion is normalized.
-        @return An instance of the Rotation class.
+@param quat Quaternion representing the rotation.
+@param normalize When true, the quaternion is normalized.
+@return An instance of the Rotation class.
         """
         quat = casadi.vec(quat)
 
