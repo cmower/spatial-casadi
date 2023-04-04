@@ -134,13 +134,34 @@ class Rotation:
     #
 
     @staticmethod
-    def from_quat(quat: ArrayType):
+    def from_quat(quat: ArrayType, seq: str = "xyzw"):
         """! Initialize from quaternion.
 
-@param quat Quaternion in scalar-last (x, y, z, w) format. The quaternion will be normalized to unit norm.
+@param quat The quaternion. The quaternion will be normalized to unit norm.
+@param seq Specifies the ordering of the quaternion. Available options are 'wxyz' (i.e. scalar-first) and 'xyzw' (i.e. scalar-last). The default is the scalar-last format given by 'xyzw'.
 @return Object containing the rotation represented by the input quaternion.
         """
-        return Rotation(quat, normalize=not isinstance(quat, casadi.SX))
+
+        # Ensure quaternion is in scalar-last format (i.e. xyzw)
+        quat = casadi.vec(quat)
+        if seq == "xyzw":
+            x = quat[0]
+            y = quat[1]
+            z = quat[2]
+            w = quat[3]
+
+        elif seq == "wxyz":
+            x = quat[1]
+            y = quat[2]
+            z = quat[3]
+            w = quat[0]
+
+        else:
+            raise ValueError(f"Sequence '{seq}' is not supported.")
+
+        quat_use = casadi.vertcat(x, y, z, w)
+
+        return Rotation(quat_use, normalize=not isinstance(quat, casadi.SX))
 
     @staticmethod
     def from_matrix(matrix: ArrayType):
@@ -294,12 +315,23 @@ class Rotation:
     # As methods
     #
 
-    def as_quat(self) -> ArrayType:
+    def as_quat(self, seq: str = "xyzw") -> ArrayType:
         """! Represent as quaternions.
 
+@param seq Specifies the ordering of the quaternion. Available options are 'wxyz' (i.e. scalar-first) and 'xyzw' (i.e. scalar-last). The default is the scalar-last format given by 'xyzw'.
 @return A quaternion vector.
         """
-        return self._quat
+
+        if seq == "xyzw":
+            return self._quat
+        elif seq == "wxyz":
+            x = self._quat[0]
+            y = self._quat[1]
+            z = self._quat[2]
+            w = self._quat[3]
+            return casadi.vertcat(w, x, y, z)
+        else:
+            raise ValueError(f"Sequence '{seq}' is not supported.")
 
     def as_matrix(self) -> ArrayType:
         """! Represent as rotation matrix.

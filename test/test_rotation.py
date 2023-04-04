@@ -53,6 +53,29 @@ def test_Rotation_mul():
         assert test1 or test2
 
 
+def test_Rotation_from_quat_seq():
+    for _ in range(NUM_RANDOM):
+        r1 = Rotation.random()
+        r2 = Rotation.random()
+
+        q1_sf = r1.as_quat("wxyz")
+        q2_sf = r2.as_quat("wxyz")
+
+        r1_sf = Rotation.from_quat(q1_sf, "wxyz")
+        r2_sf = Rotation.from_quat(q2_sf, "wxyz")
+
+        q1_sl = r1.as_quat("xyzw")
+        q2_sl = r2.as_quat("xyzw")
+
+        r1_sl = Rotation.from_quat(q1_sl)  # scalar-last is default seq
+        r2_sl = Rotation.from_quat(q2_sl)  # scalar-last is default seq
+
+        prod_sf = r1_sf * r2_sf
+        prod_sl = r1_sl * r2_sl
+
+        assert np.allclose(prod_sf.as_quat().toarray(), prod_sl.as_quat().toarray())
+
+
 def test_Rotation_identity():
     assert np.allclose(
         Rotation.identity().as_quat().toarray().flatten(), np.array([0, 0, 0, 1])
