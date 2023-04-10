@@ -728,3 +728,13 @@ class Transformation:
         rotation = self._rotation * other.rotation()
         translation = self._rotation * other.translation() + self._translation
         return Transformation(rotation, translation)
+
+    def flatten(self):
+        """! Returns the homogenous transform as a vector representation [quat, t] where quat is a unit-quaternion for the rotation and t is the translation.
+
+@return Vector representation for the homogeneous transform.
+"""
+        return cs.vertcat(
+            self._rotation.as_quat(),
+            self._translation.as_vector(),
+        )
