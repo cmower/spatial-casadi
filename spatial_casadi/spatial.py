@@ -122,6 +122,12 @@ class Rotation:
         """
         return Rotation(casadi.np.random.normal(size=(4,)))
 
+    @staticmethod
+    def symbolic():
+        """! Symbolic representation."""
+        quat = cs.SX.sym("quat", 4)
+        return Rotation(quat, normalize=False)
+
     def inv(self):
         """! Invert this rotation."""
         return Rotation(
@@ -581,6 +587,12 @@ class Translation:
         return Translation(casadi.np.random.normal(size=(3,)))
 
     @staticmethod
+    def symbolic():
+        """! Symbolic representation."""
+        t = cs.SX.sym("t", 3)
+        return Translation(t)
+
+    @staticmethod
     def from_vector(t):
         """! Initialize from translation vector.
 
@@ -669,6 +681,11 @@ class Transformation:
 @return Random homogeneous transform.
         """
         return Transformation(Rotation.random(), Translation.random())
+
+    @staticmethod
+    def symbolic():
+        """! Symbolic representation."""
+        return Transformation(Rotation.symbolic(), Translation.symbolic())
 
     @staticmethod
     def from_matrix(T: ArrayType):
