@@ -128,7 +128,7 @@ class Rotation:
 
 @return Symbolic rotation.
         """
-        quat = cs.SX.sym("quat", 4)
+        quat = casadi.SX.sym("quat", 4)
         return Rotation(quat, normalize=False)
 
     def inv(self):
@@ -595,7 +595,7 @@ class Translation:
 
 @return Symbolic translation.
         """
-        t = cs.SX.sym("t", 3)
+        t = casadi.SX.sym("t", 3)
         return Translation(t)
 
     @staticmethod
@@ -734,7 +734,7 @@ class Transformation:
 
 @return Vector representation for the homogeneous transform.
 """
-        return cs.vertcat(
+        return casadi.vertcat(
             self._rotation.as_quat(),
             self._translation.as_vector(),
         )
