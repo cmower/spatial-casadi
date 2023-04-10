@@ -124,7 +124,10 @@ class Rotation:
 
     @staticmethod
     def symbolic():
-        """! Symbolic representation."""
+        """! Symbolic representation.
+
+@return Symbolic rotation.
+        """
         quat = cs.SX.sym("quat", 4)
         return Rotation(quat, normalize=False)
 
@@ -588,7 +591,10 @@ class Translation:
 
     @staticmethod
     def symbolic():
-        """! Symbolic representation."""
+        """! Symbolic representation.
+
+@return Symbolic translation.
+        """
         t = cs.SX.sym("t", 3)
         return Translation(t)
 
@@ -684,7 +690,10 @@ class Transformation:
 
     @staticmethod
     def symbolic():
-        """! Symbolic representation."""
+        """! Symbolic representation.
+
+@return Symbolic homogenous transform.
+"""
         return Transformation(Rotation.symbolic(), Translation.symbolic())
 
     @staticmethod
