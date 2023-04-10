@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setup(
     name="spatial-casadi",
     description="Spatial transformation library for CasADi Python.",
-    version="1.0.3",
+    version="1.0.4",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/cmower/spatial-casadi",
