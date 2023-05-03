@@ -3,6 +3,7 @@ import casadi as cs
 from spatial_casadi import Rotation
 from scipy.spatial.transform import Rotation as Rot
 
+
 NUM_RANDOM = 100
 
 EULER_SEQS = (
@@ -219,7 +220,7 @@ def test_Rotation_as_rotvec():
         print("  Scipy:", RV)
         print("  Lib:  ", rv)
 
-        assert np.allclose(rv, RV, atol=1e-1, rtol=1e-1)
+        assert np.allclose(rv, RV)
 
 
 def test_Rotation_as_mrp():

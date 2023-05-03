@@ -391,14 +391,13 @@ class Rotation:
 @param degrees If True, then the given magnitudes are assumed to be in degrees. Default is False.
 @return A 3-dimensional rotation vector
         """
+
+        # w > 0 to ensure 0 <= angle <= pi
         quat = casadi.if_else(self._quat[3] < 0, -self._quat, self._quat)
-        angle = 2.0 * casadi.arctan2(casadi.norm_fro(quat), quat[3])
-        # angle2 = angle * angle
-        scale = casadi.if_else(
-            angle <= 1e-3,
-            2.0 + angle**2 / 12.0 + 7.0 * angle**2 * angle**2 / 2880.0,
-            angle / casadi.sin(angle * 0.5),
-        )
+
+        # Use formula: https://uk.mathworks.com/help/fusion/ref/quaternion.rotvec.html
+        theta = 2.0 * casadi.acos(quat[3])
+        scale = theta / casadi.sin(theta * 0.5)
 
         rotvec = casadi.vertcat(
             scale * quat[0],
