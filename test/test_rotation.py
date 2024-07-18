@@ -87,7 +87,18 @@ def test_Rotation_inv():
     for _ in range(NUM_RANDOM):
         r = Rotation.random()
         R = Rot.from_quat(r.as_quat().toarray().flatten())
-        assert np.allclose(r.inv().as_quat().toarray().flatten(), R.inv().as_quat())
+        lhs = r.inv().as_quat().toarray().flatten()
+        rhs = R.inv().as_quat()
+        assert np.allclose(lhs, rhs) or np.allclose(lhs, -rhs)
+
+
+def test_Rotation_magnitiude():
+    for _ in range(NUM_RANDOM):
+        r = Rotation.random()
+        R = Rot.from_quat(r.as_quat().toarray().flatten())
+        lhs = r.magnitude()
+        rhs = R.magnitude()
+        assert np.allclose(lhs, rhs)
 
 
 def test_Rotation_from_matrix():

@@ -69,3 +69,12 @@ def test_Translation_as_matrix():
         T[:3, :3] = Rotation.identity().as_matrix().toarray()
         t = Translation.from_matrix(T)
         assert np.allclose(t.as_matrix().toarray(), T)
+
+
+def test_Translation_magnitude():
+    for _ in range(NUM_RANDOM):
+        t = Translation.random()
+        t_np = t.as_vector().toarray().flatten()
+        magn_np = np.linalg.norm(t_np)
+        magn_sc = t.magnitude().toarray()
+        assert np.allclose(magn_np, magn_sc)

@@ -138,6 +138,11 @@ class Rotation:
             normalize=not isinstance(self._quat, casadi.SX),
         )
 
+    def magnitude(self):
+        """! Get the magnitude of the rotation."""
+        quat = self._quat
+        return 2. * casadi.arctan2(casadi.norm_fro(quat[:3]), casadi.fabs(quat[3]))
+
     #
     # From methods
     #
@@ -596,6 +601,10 @@ class Translation:
         """
         t = casadi.SX.sym("t", 3)
         return Translation(t)
+
+    def magnitude(self):
+        """! Get the magnitude of the translation."""
+        return casadi.norm_fro(self._t)
 
     @staticmethod
     def from_vector(t):
