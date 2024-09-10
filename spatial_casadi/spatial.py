@@ -540,6 +540,10 @@ class Rotation:
 
         return angles
 
+    def rotation_angle(self, other):
+        """Angle between two rotations."""
+        return (self.inv() * other).magnitude()
+
 
 class Translation:
     """! A class defining a translation vector."""
