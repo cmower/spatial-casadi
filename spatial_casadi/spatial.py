@@ -88,6 +88,22 @@ class Rotation:
 
         self._quat = quat
 
+    @property
+    def x(self):
+        return self._quat[0]
+
+    @property
+    def y(self):
+        return self._quat[1]
+
+    @property
+    def z(self):
+        return self._quat[2]
+
+    @property
+    def w(self):
+        return self._quat[3]
+
     def __mul__(self, other):
         """! Compose this rotation with the other.
 
@@ -558,6 +574,18 @@ class Translation:
         assert (
             self._t.shape[0] == 3
         ), f"expected translation vector to have length 3, got {self._t.shape[0]}."
+
+    @property
+    def x(self):
+        return self._t[0]
+
+    @property
+    def y(self):
+        return self._t[1]
+
+    @property
+    def z(self):
+        return self._t[2]
 
     def __add__(self, other):
         """! Compose this translation with the other via vector addition.
