@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['_5f_5fadd_5f_5f_86',['__add__',['../classspatial__casadi_1_1spatial_1_1Translation.html#a5091da2d5a5bbc95fdec3ff630111b99',1,'spatial_casadi::spatial::Translation']]],
+  ['_5f_5fbool_5f_5f_87',['__bool__',['../classspatial__casadi_1_1spatial_1_1Rotation.html#a8de7b6f5fda78c6aedbc6fbf6855cfb0',1,'spatial_casadi::spatial::Rotation']]],
+  ['_5f_5fgetstate_5f_5f_88',['__getstate__',['../classspatial__casadi_1_1spatial_1_1Rotation.html#a0d6095f684ea4ba0bab9788bdc6d77aa',1,'spatial_casadi::spatial::Rotation']]],
+  ['_5f_5finit_5f_5f_89',['__init__',['../classspatial__casadi_1_1spatial_1_1Rotation.html#af724957b451a8b11e0c1cdd81ec43166',1,'spatial_casadi.spatial.Rotation.__init__()'],['../classspatial__casadi_1_1spatial_1_1Translation.html#a0d64a2b26eea0133f17aa423bd1baab0',1,'spatial_casadi.spatial.Translation.__init__()'],['../classspatial__casadi_1_1spatial_1_1Transformation.html#a959ecb06b45bc4c347654f1c22121380',1,'spatial_casadi.spatial.Transformation.__init__()']]],
+  ['_5f_5flen_5f_5f_90',['__len__',['../classspatial__casadi_1_1spatial_1_1Rotation.html#a84c8dd4f7192e5e8628fa7da2e79f697',1,'spatial_casadi::spatial::Rotation']]],
+  ['_5f_5fmul_5f_5f_91',['__mul__',['../classspatial__casadi_1_1spatial_1_1Rotation.html#a83071d9b0afc8db4222d786ba21e97de',1,'spatial_casadi.spatial.Rotation.__mul__()'],['../classspatial__casadi_1_1spatial_1_1Transformation.html#a70219ec4ef3faab1a571c0f06aa6ebd7',1,'spatial_casadi.spatial.Transformation.__mul__()']]],
+  ['_5f_5fneg_5f_5f_92',['__neg__',['../classspatial__casadi_1_1spatial_1_1Translation.html#a84967ec4233a6533b232179f37f7cfbf',1,'spatial_casadi::spatial::Translation']]],
+  ['_5f_5fsetstate_5f_5f_93',['__setstate__',['../classspatial__casadi_1_1spatial_1_1Rotation.html#a246fd28a75993a99dd4a6e774345a3e2',1,'spatial_casadi::spatial::Rotation']]],
+  ['_5f_5fsub_5f_5f_94',['__sub__',['../classspatial__casadi_1_1spatial_1_1Translation.html#a81493ca56b487737fb39fbe088aadcd8',1,'spatial_casadi::spatial::Translation']]],
+  ['_5fargmax4_95',['_argmax4',['../namespacespatial__casadi_1_1spatial.html#af58e1371cd97c16f530e5157eacdb788',1,'spatial_casadi::spatial']]],
+  ['_5fcompose_5fquat_96',['_compose_quat',['../namespacespatial__casadi_1_1spatial.html#a2e5edc79b4cbc45b10c26ff25d19cfbb',1,'spatial_casadi::spatial']]],
+  ['_5fcross3_97',['_cross3',['../namespacespatial__casadi_1_1spatial.html#a70bf271bfe1909a2dd90fab74d3a51c5',1,'spatial_casadi::spatial']]],
+  ['_5fdot3_98',['_dot3',['../namespacespatial__casadi_1_1spatial.html#a0fe22776406ada3860d67e1aec0be255',1,'spatial_casadi::spatial']]],
+  ['_5felementary_5fquat_5fcompose_99',['_elementary_quat_compose',['../namespacespatial__casadi_1_1spatial.html#aa22833d7ffac083176b346359c90283c',1,'spatial_casadi::spatial']]],
+  ['_5fget_5fangles_100',['_get_angles',['../namespacespatial__casadi_1_1spatial.html#a5a6db7b3a32bd035e1341b706aaf7b6c',1,'spatial_casadi::spatial']]],
+  ['_5fiszero_101',['_iszero',['../namespacespatial__casadi_1_1spatial.html#a3186638738bfaebe314f679343da5e7f',1,'spatial_casadi::spatial']]],
+  ['_5fmake_5felementary_5fquat_102',['_make_elementary_quat',['../namespacespatial__casadi_1_1spatial.html#a9a0da1a9c8bd010439aa76e76e324b4e',1,'spatial_casadi::spatial']]],
+  ['_5fnorm3_103',['_norm3',['../namespacespatial__casadi_1_1spatial.html#ae6202419684467ed3b9d319e90cdaad9',1,'spatial_casadi::spatial']]],
+  ['_5fnormalize4_104',['_normalize4',['../namespacespatial__casadi_1_1spatial.html#a273fc28d3cb994695b3e275f47975838',1,'spatial_casadi::spatial']]],
+  ['_5fquat_5fcanonical_105',['_quat_canonical',['../namespacespatial__casadi_1_1spatial.html#a12ba0ca5370cb76c3b32f49f3403bb03',1,'spatial_casadi::spatial']]],
+  ['_5fquat_5fcanonical_5fsingle_106',['_quat_canonical_single',['../namespacespatial__casadi_1_1spatial.html#a9ead1b10cb25a52c5933ba021a0e62d7',1,'spatial_casadi::spatial']]],
+  ['_5fsingle_5fmatrix_5fto_5fquat_107',['_single_matrix_to_quat',['../namespacespatial__casadi_1_1spatial.html#ae3822eaef7c9de59569215e7fb738107',1,'spatial_casadi::spatial']]]
+];
