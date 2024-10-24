@@ -3,11 +3,39 @@ import numpy as np
 import casadi as cs
 from spatial_casadi.angles import deg2rad
 
+# Machine tolerance
+eps = np.finfo(float).eps
 
-_axis2ind = {"x": 0, "y": 1, "z": 2}
+# Array type unions
+CasadiArray = cs.MX | cs.SX | cs.DM
+NonSymbolicCasadiArray = cs.DM
+Array = cs.MX | cs.SX | cs.DM | np.ndarray
+NonSymbolicArray = cs.DM | np.ndarray
+
+_elementary_basis_index: dict[str, int] = {"x": 0, "y": 1, "z": 2}
+
+_ex = cs.DM([1.0, 0.0, 0.0])
+_ey = cs.DM([0.0, 1.0, 0.0])
+_ez = cs.DM([0.0, 0.0, 1.0])
+
+_elementary_basis_vector = {"x": _ex, "y": _ey, "z": _ez}
 
 
-def _make_elementary_quat(axis, angles):
+def _iszero(a: Array) -> bool:
+    """True when a is numerically zero, False otherwise."""
+    return cs.fabs(a) < eps
+
+
+def _cross3(a: Array, b: Array) -> CasadiArray:
+    """Cross product for vectors a and b of length 3."""
+    return cs.vertcat(
+        a[1] * b[2] - a[2] * b[1],
+        a[2] * b[0] - a[0] * b[2],
+        a[0] * b[1] - a[1] * b[0],
+    )
+
+
+def _make_elementary_quat(axis: str, angles: Array) -> CasadiArray:
     """
     Create an elementary quaternion representing a rotation around a specified axis.
 
@@ -18,13 +46,71 @@ def _make_elementary_quat(axis, angles):
     Returns
         casadi-array: A quaternion representing the rotation.
     """
-    angles = cs.vec(angles)
-    n = angles.shape[0]
-    angles_half = angles * 0.5
-    z = cs.DM.zeros(n)
-    quat_list = [z, z, z, cs.cos(angles_half)]
-    quat_list[_axis2ind[axis]] = cs.sin(angles_half)
-    return cs.horzcat(*quat_list)
+    angles: CasadiArray = cs.vec(angles).T
+    n: int = angles.shape[1]
+    angles_half: CasadiArray = angles * 0.5
+    z: cs.DM = cs.DM.zeros(1, n)
+    quat_list: list[CasadiArray] = [z, z, z, cs.cos(angles_half)]
+    quat_list[_elementary_basis_index[axis]] = cs.sin(angles_half)
+    return cs.vertcat(*quat_list)
+
+
+def _dot3(a: Array, b: Array) -> CasadiArray:
+    """Dot-product with vectors of length 3."""
+    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
+
+
+def _norm3(elems: Array) -> CasadiArray:
+    """Euclidean norm for a vector of length 3."""
+    return cs.sqrt(_dot3(elems, elems))
+
+
+def _normalize4(elems: Array) -> CasadiArray:
+    """Normalize vector of length 4."""
+    norm_ = cs.sqrt(_dot3(elems, elems) + elems[3] * elems[3])
+    norm = cs.fmax(norm_, eps)
+    return cs.vertcat(elems[0], elems[1], elems[2], elems[3]) / norm
+
+
+def _argmax4(a):
+    """Index for the element with maximum value."""
+    raise NotImplementedError("casadi symbolic arrays are unable to support argmax")
+
+
+def _quat_canonical_single(q: Array) -> CasadiArray:
+    """Reduce the quaternion double coverage of the rotation group to a unique canonical 'positive' single cover."""
+    neg_q = -1.0 * q
+    return cs.if_else(
+        q[3] < 0.0,
+        neg_q,
+        cs.if_else(
+            _iszero(q[3]) and q[0] < 0.0,
+            neg_q,
+            cs.if_else(
+                _iszero(q[3]) and _iszero(q[0]) and q[1] < 0.0,
+                neg_q,
+                cs.if_else(
+                    _iszero(q[3]) and _iszero(q[0]) and _iszero(q[1]) and q[2] < 0.0,
+                    neg_q,
+                    q,
+                ),
+            ),
+        ),
+    )
+
+
+def _quat_canonical(q: Array) -> CasadiArray:
+    return cs.horzcat(*[_quat_canonical_single(q[:, i]) for i in range(q.shape[1])])
+
+
+def _get_angles(angles, extrinsic, symmetric, sign, lamb, a, b, c, d):
+    if extrinsic:
+        angle_first = 0
+        angle_third = 2
+    else:
+        angle_first = 2
+        angle_third = 0
+    
 
 
 def _compose_quat(p, q):
