@@ -3,7 +3,6 @@ import casadi as cs
 # The number pi (i.e. 3.141..)
 pi = cs.np.pi
 
-
 def deg2rad(x):
     """Convert degrees to radians.
 
