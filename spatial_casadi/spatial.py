@@ -4,6 +4,9 @@ import casadi as cs
 from spatial_casadi.angles import deg2rad
 
 
+_axis2ind = {"x": 0, "y": 1, "z": 2}
+
+
 def _make_elementary_quat(axis, angles):
     """
     Create an elementary quaternion representing a rotation around a specified axis.
@@ -15,19 +18,13 @@ def _make_elementary_quat(axis, angles):
     Returns
         casadi-array: A quaternion representing the rotation.
     """
-    quat = [0.0, 0.0, 0.0, 0.0]
-
-    if axis == "x":
-        axis_ind = 0
-    elif axis == "y":
-        axis_ind = 1
-    elif axis == "z":
-        axis_ind = 2
-
-    quat[3] = cs.cos(angles / 2.0)
-    quat[axis_ind] = cs.sin(angles / 2.0)
-
-    return cs.vertcat(*quat)
+    angles = cs.vec(angles)
+    n = angles.shape[0]
+    angles_half = angles * 0.5
+    z = cs.DM.zeros(n)
+    quat_list = [z, z, z, cs.cos(angles_half)]
+    quat_list[_axis2ind[axis]] = cs.sin(angles_half)
+    return cs.horzcat(*quat_list)
 
 
 def _compose_quat(p, q):
