@@ -1,24 +1,53 @@
 [build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+requires = ["scikit-build-core>=0.10", "swig>=4.4,<5", "casadi==3.8.2"]
+build-backend = "scikit_build_core.build"
 
 [project]
-name = "spatial_casadi"
-version = "1.1.0"
-authors = [
-  { name="Christopher E. Mower", email="christopher.mower@kcl.ac.uk" },
-]
-description = "Spatial transformation library for CasADi Python. "
+name = "spatial-casadi"
+version = "2.0.0"
+description = "Differentiable rotations and rigid transforms for CasADi"
 readme = "README.md"
-requires-python = ">=3.7"
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
-    "Operating System :: OS Independent",
-]
+requires-python = ">=3.10"
+license = "LGPL-3.0-or-later"
+license-files = ["LICENSE", "LICENSE.GPL", "THIRD_PARTY_NOTICES"]
+authors = [{name = "Christopher E. Mower"}]
+dependencies = ["casadi==3.8.2", "numpy>=1.24"]
 
 [project.urls]
-"Homepage" = "https://cmower.github.io/spatial-casadi/"
-"Documentation" = "https://cmower.github.io/spatial-casadi/"
-"Bug Tracker" = "https://github.com/cmower/spatial-casadi/issues"
-"Source" = "https://github.com/cmower/spatial-casadi"
+Documentation = "https://cmower.github.io/spatial-casadi/"
+Repository = "https://github.com/cmower/spatial-casadi"
+
+[project.optional-dependencies]
+test = ["pytest>=8", "scipy>=1.15"]
+
+[dependency-groups]
+dev = ["pytest>=8", "scipy>=1.15", "build", "scikit-build-core>=0.10", "swig>=4.4,<5"]
+docs = ["sphinx>=8", "furo", "breathe"]
+
+[tool.scikit-build]
+cmake.version = ">=3.20"
+wheel.packages = ["spatial_casadi"]
+build-dir = "build/{wheel_tag}"
+editable.rebuild = true
+editable.verbose = false
+sdist.include = ["include/**", "bindings/**", "cmake/**", "tests/**"]
+
+[tool.pytest.ini_options]
+testpaths = ["test", "tests"]
+
+[tool.cibuildwheel]
+build = "cp310-* cp311-* cp312-* cp313-* cp314-*"
+skip = "*-musllinux* *-win32 *-manylinux_i686"
+test-requires = ["pytest", "scipy"]
+test-command = "python -m pytest --import-mode=importlib {project}/tests {project}/test"
+# Link against the separately installed CasADi wheel; do not vendor its runtime.
+repair-wheel-command = ""
+
+[tool.cibuildwheel.linux]
+repair-wheel-command = "auditwheel repair --exclude libcasadi.so.3.7 -w {dest_dir} {wheel}"
+
+[tool.cibuildwheel.macos]
+environment = {MACOSX_DEPLOYMENT_TARGET = "11.0"}
+
+[tool.uv]
+no-build-isolation-package = ["spatial-casadi"]

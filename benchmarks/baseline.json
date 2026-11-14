@@ -1,0 +1,187 @@
+{
+  "python": "3.12.13",
+  "casadi": "3.8.2",
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.35",
+  "results": [
+    {
+      "name": "current",
+      "kind": "SX",
+      "length": 1,
+      "build_ms": 1.24,
+      "nodes": [
+        63,
+        223,
+        756
+      ],
+      "code_bytes": 27930,
+      "value_us": 8.24,
+      "jacobian_us": 12.19,
+      "hessian_us": 8.44
+    },
+    {
+      "name": "current",
+      "kind": "SX",
+      "length": 10,
+      "build_ms": 19.49,
+      "nodes": [
+        594,
+        9959,
+        31352
+      ],
+      "code_bytes": 992920,
+      "value_us": 9.62,
+      "jacobian_us": 23.11,
+      "hessian_us": 63.52
+    },
+    {
+      "name": "current",
+      "kind": "SX",
+      "length": 50,
+      "build_ms": 473.81,
+      "nodes": [
+        2954,
+        51799,
+        652460
+      ],
+      "code_bytes": 19305640,
+      "value_us": 18.29,
+      "jacobian_us": 84.95,
+      "hessian_us": 1183.29
+    },
+    {
+      "name": "current",
+      "kind": "MX",
+      "length": 1,
+      "build_ms": 2.44,
+      "nodes": [
+        107,
+        356,
+        1142
+      ],
+      "code_bytes": 96492,
+      "value_us": 9.37,
+      "jacobian_us": 12.04,
+      "hessian_us": 23.64
+    },
+    {
+      "name": "current",
+      "kind": "MX",
+      "length": 10,
+      "build_ms": 64.14,
+      "nodes": [
+        638,
+        9584,
+        43264
+      ],
+      "code_bytes": 3340855,
+      "value_us": 18.8,
+      "jacobian_us": 129.47,
+      "hessian_us": 816.94
+    },
+    {
+      "name": "current",
+      "kind": "MX",
+      "length": 50,
+      "build_ms": 1625.75,
+      "nodes": [
+        2998,
+        48064,
+        930192
+      ],
+      "code_bytes": 67912865,
+      "value_us": 55.67,
+      "jacobian_us": 1313.41,
+      "hessian_us": 52574.2
+    },
+    {
+      "name": "legacy",
+      "kind": "SX",
+      "length": 1,
+      "build_ms": 2.49,
+      "nodes": [
+        63,
+        223,
+        756
+      ],
+      "code_bytes": 27930,
+      "value_us": 8.62,
+      "jacobian_us": 8.47,
+      "hessian_us": 9.85
+    },
+    {
+      "name": "legacy",
+      "kind": "SX",
+      "length": 10,
+      "build_ms": 27.73,
+      "nodes": [
+        594,
+        9959,
+        31352
+      ],
+      "code_bytes": 992915,
+      "value_us": 10.09,
+      "jacobian_us": 35.88,
+      "hessian_us": 68.4
+    },
+    {
+      "name": "legacy",
+      "kind": "SX",
+      "length": 50,
+      "build_ms": 510.09,
+      "nodes": [
+        2954,
+        51799,
+        652460
+      ],
+      "code_bytes": 19305635,
+      "value_us": 23.48,
+      "jacobian_us": 91.66,
+      "hessian_us": 1139.11
+    },
+    {
+      "name": "legacy",
+      "kind": "MX",
+      "length": 1,
+      "build_ms": 3.86,
+      "nodes": [
+        78,
+        255,
+        937
+      ],
+      "code_bytes": 73378,
+      "value_us": 9.06,
+      "jacobian_us": 11.41,
+      "hessian_us": 26.28
+    },
+    {
+      "name": "legacy",
+      "kind": "MX",
+      "length": 10,
+      "build_ms": 80.27,
+      "nodes": [
+        663,
+        10422,
+        49160
+      ],
+      "code_bytes": 3350287,
+      "value_us": 16.64,
+      "jacobian_us": 151.06,
+      "hessian_us": 971.53
+    },
+    {
+      "name": "legacy",
+      "kind": "MX",
+      "length": 50,
+      "build_ms": 1841.44,
+      "nodes": [
+        3263,
+        53822,
+        1098448
+      ],
+      "code_bytes": 71074905,
+      "value_us": 52.83,
+      "jacobian_us": 930.67,
+      "hessian_us": 59231.94
+    }
+  ]
+}

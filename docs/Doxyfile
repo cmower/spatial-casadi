@@ -1,0 +1,13 @@
+PROJECT_NAME = spatial-casadi
+OUTPUT_DIRECTORY = _build/doxygen
+INPUT = ../include/spatial_casadi
+RECURSIVE = YES
+GENERATE_HTML = NO
+GENERATE_LATEX = NO
+GENERATE_XML = YES
+QUIET = YES
+EXTRACT_ALL = YES
+EXTRACT_PRIVATE = NO
+HIDE_UNDOC_MEMBERS = YES
+EXCLUDE = ../include/spatial_casadi/detail.hpp
+WARN_AS_ERROR = YES

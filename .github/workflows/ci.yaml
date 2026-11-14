@@ -1,0 +1,49 @@
+name: Tests
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  python:
+    strategy:
+      matrix:
+        python: ['3.10', '3.12', '3.14']
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ matrix.python }}
+          enable-cache: true
+      - run: uv sync --locked
+      - run: uv run pytest
+      - run: uv run python examples/fit_rotation.py
+      - name: Native tests and installed consumer
+        shell: bash
+        run: |
+          casadi_cmake=$(uv run python -c "import casadi, pathlib; print(pathlib.Path(casadi.__file__).parent / 'cmake')")
+          cmake -S . -B build/cpp -Dcasadi_DIR="$casadi_cmake" -DSPATIAL_CASADI_BUILD_TESTS=ON -DCMAKE_INSTALL_PREFIX="$RUNNER_TEMP/spatial-sdk"
+          cmake --build build/cpp --parallel 2
+          ctest --test-dir build/cpp --output-on-failure
+          cmake --install build/cpp
+          cmake -S examples/cpp -B build/consumer -DCMAKE_PREFIX_PATH="$RUNNER_TEMP/spatial-sdk" -Dcasadi_DIR="$casadi_cmake"
+          cmake --build build/consumer --parallel 2
+          build/consumer/spatial_example
+      - name: Build source archive and wheel
+        run: uv build
+      - name: Install wheel with pip and uv outside checkout
+        shell: bash
+        run: |
+          uv venv --seed "$RUNNER_TEMP/pip-check"
+          "$RUNNER_TEMP/pip-check/bin/python" -m pip install dist/*.whl
+          uv venv "$RUNNER_TEMP/uv-check"
+          uv pip install --python "$RUNNER_TEMP/uv-check/bin/python" dist/*.whl
+          cd "$RUNNER_TEMP"
+          pip-check/bin/python -c 'from spatial_casadi import RigidTransform; print(RigidTransform.identity().as_matrix())'
+          uv-check/bin/python -c 'from spatial_casadi import Rotation; print(Rotation.identity().as_rotvec())'
+      - name: Build from source archive
+        shell: bash
+        run: |
+          mkdir "$RUNNER_TEMP/sdist"
+          tar -xzf dist/*.tar.gz -C "$RUNNER_TEMP/sdist"
+          cd "$RUNNER_TEMP/sdist/"spatial_casadi-*
+          uv build --wheel --no-config

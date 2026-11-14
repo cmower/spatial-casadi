@@ -1,0 +1,61 @@
+cmake_minimum_required(VERSION 3.20)
+project(spatial_casadi VERSION 2.0.0 LANGUAGES CXX)
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+option(SPATIAL_CASADI_BUILD_PYTHON "Build Python bindings" OFF)
+option(SPATIAL_CASADI_BUILD_TESTS "Build C++ tests" OFF)
+if(SKBUILD)
+  set(SPATIAL_CASADI_BUILD_PYTHON ON)
+endif()
+if(SPATIAL_CASADI_BUILD_PYTHON)
+  find_package(Python REQUIRED COMPONENTS Interpreter Development.Module)
+  execute_process(COMMAND "${Python_EXECUTABLE}" -c
+    "import casadi, pathlib; print(pathlib.Path(casadi.__file__).parent / 'cmake')"
+    OUTPUT_VARIABLE casadi_DIR OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ERROR_IS_FATAL ANY)
+endif()
+find_package(casadi 3.8.2 EXACT CONFIG REQUIRED)
+add_library(spatial_casadi INTERFACE)
+add_library(spatial_casadi::spatial_casadi ALIAS spatial_casadi)
+target_compile_features(spatial_casadi INTERFACE cxx_std_17)
+target_include_directories(spatial_casadi INTERFACE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+target_link_libraries(spatial_casadi INTERFACE casadi::casadi)
+if(SPATIAL_CASADI_BUILD_PYTHON)
+  find_package(SWIG 4.4 REQUIRED)
+  include(UseSWIG)
+  set(CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_BINARY_DIR}/python")
+  set_source_files_properties(bindings/native.i PROPERTIES CPLUSPLUS ON USE_TARGET_INCLUDE_DIRECTORIES TRUE)
+  swig_add_library(native TYPE MODULE LANGUAGE python SOURCES bindings/native.i)
+  target_include_directories(native PRIVATE include bindings)
+  target_compile_definitions(native PRIVATE SWIG_TYPE_TABLE=casadi)
+  target_link_libraries(native PRIVATE spatial_casadi Python::Module)
+  if(APPLE)
+    set_target_properties(native PROPERTIES INSTALL_RPATH "@loader_path/../casadi")
+  elseif(UNIX)
+    set_target_properties(native PROPERTIES INSTALL_RPATH "$ORIGIN/../casadi")
+  endif()
+  install(TARGETS native LIBRARY DESTINATION spatial_casadi RUNTIME DESTINATION spatial_casadi)
+  install(FILES "${CMAKE_SWIG_OUTDIR}/native.py" DESTINATION spatial_casadi)
+endif()
+install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(TARGETS spatial_casadi EXPORT spatial_casadiTargets)
+install(EXPORT spatial_casadiTargets NAMESPACE spatial_casadi::
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/spatial_casadi)
+configure_package_config_file(cmake/spatial_casadiConfig.cmake.in
+  "${CMAKE_CURRENT_BINARY_DIR}/spatial_casadiConfig.cmake"
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/spatial_casadi)
+write_basic_package_version_file("${CMAKE_CURRENT_BINARY_DIR}/spatial_casadiConfigVersion.cmake"
+  COMPATIBILITY SameMajorVersion)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/spatial_casadiConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/spatial_casadiConfigVersion.cmake"
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/spatial_casadi)
+if(SPATIAL_CASADI_BUILD_TESTS)
+  enable_testing()
+  add_executable(test_spatial tests/cpp/test_spatial.cpp)
+  target_link_libraries(test_spatial PRIVATE spatial_casadi)
+  add_test(NAME spatial COMMAND test_spatial)
+endif()
+
+install(FILES LICENSE LICENSE.GPL THIRD_PARTY_NOTICES
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/licenses/spatial_casadi)
