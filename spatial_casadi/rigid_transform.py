@@ -1,6 +1,8 @@
 """Rigid transforms with SciPy names and CasADi expressions."""
+
 import casadi as cs
-from ._arrays import columns, matrices, promote, implementation, wrap, indices
+
+from ._arrays import columns, implementation, indices, matrices, promote, wrap
 from .rotation import Rotation
 
 
@@ -9,7 +11,7 @@ class RigidTransform:
 
     def __init__(self, matrix):
         value, self._single = matrices(matrix, 4)
-        self._impl = implementation('RigidTransform', value).from_matrix(value)
+        self._impl = implementation("RigidTransform", value).from_matrix(value)
 
     @classmethod
     def from_matrix(cls, matrix):
@@ -21,8 +23,10 @@ class RigidTransform:
         """Construct from translation and Rotation, in that order."""
         t, single = columns(translation, 3)
         t, q = promote(t, rotation.as_quat())
-        r = implementation('Rotation', q)(q, False)
-        return wrap(cls, implementation('RigidTransform', t)(t, r), single and rotation.single)
+        r = implementation("Rotation", q)(q, False)
+        return wrap(
+            cls, implementation("RigidTransform", t)(t, r), single and rotation.single
+        )
 
     @classmethod
     def from_rotation(cls, rotation):
@@ -36,26 +40,36 @@ class RigidTransform:
     def from_exp_coords(cls, exp_coords):
         """Construct from columns [rotation vector; translational velocity]."""
         value, single = columns(exp_coords, 6)
-        return wrap(cls, implementation('RigidTransform', value).from_exp_coords(value), single)
+        return wrap(
+            cls, implementation("RigidTransform", value).from_exp_coords(value), single
+        )
 
     @classmethod
     def from_dual_quat(cls, dual_quat, *, scalar_first=False):
         """Construct from real and dual quaternion pairs; normalize the pair."""
         value, single = columns(dual_quat, 8)
-        return wrap(cls, implementation('RigidTransform', value).from_dual_quat(value, scalar_first), single)
+        return wrap(
+            cls,
+            implementation("RigidTransform", value).from_dual_quat(value, scalar_first),
+            single,
+        )
 
     @classmethod
     def identity(cls, num=None):
-        impl = implementation('RigidTransform', cs.DM()).identity(1 if num is None else num)
+        impl = implementation("RigidTransform", cs.DM()).identity(
+            1 if num is None else num
+        )
         return wrap(cls, impl, num is None)
 
     @classmethod
     def concatenate(cls, transforms):
         transforms = list(transforms)
         if not transforms:
-            raise ValueError('Provide at least one transform.')
+            raise ValueError("Provide at least one transform.")
         t = cs.horzcat(*promote(*[x.translation for x in transforms]))
-        result = cls.from_components(t, Rotation.concatenate([x.rotation for x in transforms]))
+        result = cls.from_components(
+            t, Rotation.concatenate([x.rotation for x in transforms])
+        )
         result._single = False
         return result
 
@@ -86,21 +100,25 @@ class RigidTransform:
         return self._impl.as_dual_quat(scalar_first)
 
     def _cast(self, typ):
-        r = implementation('Rotation', typ())(typ(self.rotation.as_quat()), False)
-        return implementation('RigidTransform', typ())(typ(self.translation), r)
+        r = implementation("Rotation", typ())(typ(self.rotation.as_quat()), False)
+        return implementation("RigidTransform", typ())(typ(self.translation), r)
 
     def __mul__(self, other):
         if not isinstance(other, RigidTransform):
             return NotImplemented
         a, _ = promote(self.rotation.as_quat(), other.rotation.as_quat())
-        return wrap(RigidTransform, self._cast(type(a)).compose(other._cast(type(a))), self.single and other.single)
+        return wrap(
+            RigidTransform,
+            self._cast(type(a)).compose(other._cast(type(a))),
+            self.single and other.single,
+        )
 
     def inv(self):
         return wrap(RigidTransform, self._impl.inv(), self.single)
 
     def __pow__(self, n, modulus=None):
         if modulus is not None:
-            raise TypeError('Modular powers are not supported.')
+            raise TypeError("Modular powers are not supported.")
         return wrap(RigidTransform, self._impl.power(float(n)), self.single)
 
     def apply(self, vector, inverse=False):
@@ -110,7 +128,7 @@ class RigidTransform:
 
     def __getitem__(self, index):
         if self.single:
-            raise TypeError('A single transform is not indexable.')
+            raise TypeError("A single transform is not indexable.")
         selected, single = indices(index, self._impl.size())
         r = Rotation(self.rotation.as_quat()[:, selected], normalize=False)
         result = RigidTransform.from_components(self.translation[:, selected], r)
@@ -119,7 +137,7 @@ class RigidTransform:
 
     def __len__(self):
         if self.single:
-            raise TypeError('A single transform has no length.')
+            raise TypeError("A single transform has no length.")
         return self._impl.size()
 
     def __bool__(self):

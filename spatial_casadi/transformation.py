@@ -1,5 +1,7 @@
 """Original Transformation API, implemented through RigidTransform."""
+
 import casadi as cs
+
 from .rigid_transform import RigidTransform
 from .rotation import Rotation
 from .translation import Translation
@@ -40,7 +42,7 @@ class Transformation:
         return cls(Rotation.random(), Translation.random())
 
     @classmethod
-    def symbolic(cls, kind='SX'):
+    def symbolic(cls, kind="SX"):
         return cls(Rotation.symbolic(kind=kind), Translation.symbolic(kind=kind))
 
     @classmethod
