@@ -96,7 +96,7 @@ def test_Rotation_magnitiude():
     for _ in range(NUM_RANDOM):
         r = Rotation.random()
         R = Rot.from_quat(r.as_quat().toarray().flatten())
-        lhs = r.magnitude()
+        lhs = r.magnitude().full()
         rhs = R.magnitude()
         assert np.allclose(lhs, rhs)
 

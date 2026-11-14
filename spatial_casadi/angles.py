@@ -1,30 +1,19 @@
+"""Angle conversions preserving CasADi types."""
 import casadi as cs
+from . import native
 
-# The number pi (i.e. 3.141..)
-pi = cs.np.pi
+
+def _convert(name, x):
+    if not isinstance(x, (cs.DM, cs.SX, cs.MX)):
+        x = cs.DM(x)
+    return getattr(native, name + type(x).__name__)(x)
+
 
 def deg2rad(x):
-    """Convert degrees to radians.
-
-    Args
-      x (array-like) An array containing angles in degrees.
-
-    Returns
-      casadi-array
-        An array containing angles in radians.
-
-    """
-    return (pi / 180.0) * cs.horzcat(x)
+    """Convert degrees to radians."""
+    return _convert('deg2rad', x)
 
 
 def rad2deg(x):
-    """Convert radians to degrees.
-
-    Args
-      x (array-like) An array containing angles in radians.
-
-    Returns
-      casadi-array
-        An array containing angles in degrees.
-    """
-    return (180.0 / pi) * cs.horzcat(x)
+    """Convert radians to degrees."""
+    return _convert('rad2deg', x)

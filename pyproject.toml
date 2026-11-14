@@ -28,6 +28,7 @@ cmake.version = ">=3.20"
 wheel.packages = ["spatial_casadi"]
 build-dir = "build/{wheel_tag}"
 editable.rebuild = true
+editable.verbose = false
 sdist.include = ["include/**", "bindings/**", "cmake/**", "tests/**"]
 
 [tool.pytest.ini_options]

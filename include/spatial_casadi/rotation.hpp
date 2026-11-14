@@ -1,5 +1,6 @@
 #pragma once
 #include <spatial_casadi/detail.hpp>
+#include <random>
 
 namespace spatial_casadi {
 /// Rotations stored as scalar-last quaternion columns (4 x N).
@@ -19,6 +20,20 @@ template<class T> class Rotation {
     detail::require(num > 0, "Batch must be nonempty.");
     T q = T::zeros(4,num); q(3,casadi::Slice()) = 1;
     return Rotation(q, false);
+  }
+  static Rotation concatenate(const std::vector<Rotation>& rotations) {
+    detail::require(!rotations.empty(), "Provide at least one rotation.");
+    std::vector<T> q;
+    for (const auto& r : rotations) q.push_back(r.as_quat());
+    return Rotation(T::horzcat(q),false);
+  }
+  static Rotation random(casadi_int num, unsigned long seed) {
+    detail::require(num > 0, "Batch must be nonempty.");
+    std::mt19937 generator(seed);
+    std::normal_distribution<double> normal;
+    casadi::DM q=casadi::DM::zeros(4,num);
+    for (casadi_int i=0;i<q.numel();++i) q(i)=normal(generator);
+    return Rotation(T(q));
   }
   static Rotation from_rotvec(const T& v, bool degrees = false) {
     detail::shape(v,3);
@@ -99,7 +114,7 @@ template<class T> class Rotation {
       T middle=2*atan2(sqrt(c*c+d*d),sqrt(a*a+b*b));
       T low=fabs(middle)<=1e-7, high=fabs(middle-detail::pi)<=1e-7;
       T sum=atan2(b,a), diff=atan2(d,c);
-      T first=T::if_else(low,2*sum,T::if_else(high,2*diff*(intrinsic ? -1 : 1),
+      T first=T::if_else(low,2*sum,T::if_else(high,2*diff*(intrinsic ? 1 : -1),
                                            intrinsic ? sum+diff : sum-diff));
       T third=T::if_else(low+high, T(0), intrinsic ? sum-diff : sum+diff);
       if (!symmetric) { if (intrinsic) first*=sign; else third*=sign; middle-=detail::pi/2; }
@@ -121,6 +136,7 @@ template<class T> class Rotation {
     return Rotation(detail::columns(q_, [](const T& q) { return detail::conjugate(q); }),false);
   }
   Rotation power(double n) const {
+    detail::require(std::isfinite(n), "Power must be finite.");
     if (n==0) return identity(size());
     if (n==1) return *this;
     if (n==-1) return inv();

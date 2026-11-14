@@ -55,7 +55,7 @@ template<class T> T rotate(const T& q, const T& v) {
   return v + 2*q(3)*uv + 2*cross(u, uv);
 }
 template<class T> T exp_quat(const T& v) {
-  T s = dot(v, v), small = s < 1e-8;
+  T s = dot(v, v), small = s < 1e-4;
   // Guard the general branch too: AD can evaluate inactive expressions.
   T a = sqrt(T::if_else(small, T(1), s));
   T scale = T::if_else(small, 0.5-s/48+s*s/3840-s*s*s/645120, sin(a/2)/a);
@@ -64,7 +64,7 @@ template<class T> T exp_quat(const T& v) {
 }
 template<class T> T log_quat(const T& input) {
   T q = canonical(input), v = q(casadi::Slice(0, 3));
-  T s = dot(v, v), small = s < 1e-8;
+  T s = dot(v, v), small = s < 1e-4;
   T a = sqrt(T::if_else(small, T(1), s));
   T scale = T::if_else(small, 2+s/3+3*s*s/20+5*s*s*s/56, 2*atan2(a, q(3))/a);
   return scale*v;
