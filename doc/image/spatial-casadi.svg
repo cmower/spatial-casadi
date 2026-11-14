@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-6 -6 360 298" role="img" aria-labelledby="title desc">
+  <title id="title">spatial-casadi</title>
+  <desc id="desc">CasADi-inspired orbital frame with red, green and blue axes.</desc>
+  <g fill="#727272">
+    <path d="M244 35 C280 62 341 111 347 158 C354 224 283 260 202 275 L198 276 C200 261 195 252 189 243 C234 234 286 222 315 192 C331 177 336 160 330 140 C321 104 280 72 241 41 Z"/>
+    <path d="M51 211 C78 229 112 238 148 244 C140 255 138 263 141 279 C105 271 59 254 35 233 C43 226 49 220 51 211 Z"/>
+    <path d="M97 32 L100 37 C99 40 97 41 94 43 C65 66 35 97 18 132 C10 150 14 163 18 175 L1 182 C-5 171 0 153 4 140 C18 98 58 62 97 32 Z"/>
+    <path d="M114 49 L123 50 L123 109 C114 108 107 109 99 113 Z"/>
+    <circle cx="124.5" cy="20.5" r="21"/>
+  </g>
+  <path fill="#f00" d="M86 152 Q90 150 91 155 Q91 158 87 161 L49 193 Q44 186 37 181 Q38 178 42 176 Z"/>
+  <path fill="#00f" d="M195 39 Q199 40 201 44 L147 125 Q145 127 143 126 Q137 117 129 112 Z"/>
+  <path fill="#0f0" d="M136 161 Q140 165 144 173 L177 232 Q178 235 178 237 Q166 235 153 239 L132 164 Z"/>
+  <g fill="#000">
+    <circle cx="219.5" cy="21.5" r="21"/>
+    <circle cx="116" cy="138.5" r="21"/>
+    <circle cx="21.5" cy="205.5" r="21"/>
+    <circle cx="169.5" cy="265.5" r="21"/>
+  </g>
+</svg>
