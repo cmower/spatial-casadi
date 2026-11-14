@@ -56,3 +56,6 @@ if(SPATIAL_CASADI_BUILD_TESTS)
   target_link_libraries(test_spatial PRIVATE spatial_casadi)
   add_test(NAME spatial COMMAND test_spatial)
 endif()
+
+install(FILES LICENSE LICENSE.GPL THIRD_PARTY_NOTICES
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/licenses/spatial_casadi)

@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.20)
+project(spatial_example LANGUAGES CXX)
+find_package(spatial_casadi CONFIG REQUIRED)
+add_executable(spatial_example main.cpp)
+target_link_libraries(spatial_example PRIVATE spatial_casadi::spatial_casadi)
