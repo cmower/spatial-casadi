@@ -1,14 +1,17 @@
-<img src="doc/image/spatial-casadi.svg" alt="spatial-casadi logo" width="72" align="right">
+<img src="https://raw.githubusercontent.com/cmower/spatial-casadi/master/doc/image/spatial-casadi.svg" alt="spatial-casadi logo" width="72" align="right">
 
 # spatial-casadi
 
 Differentiable rotations and rigid transforms for CasADi: one C++ core,
 a SciPy-style Python API, and support for `DM`, `SX`, and `MX`.
 
+There is currently an issue with PyPI publishing. Install the latest version
+from GitHub instead (requires Git and a C++17 compiler):
+
 ```bash
-pip install spatial-casadi
+pip install "git+https://github.com/cmower/spatial-casadi.git@master"
 # or
-uv add spatial-casadi
+uv add "spatial-casadi @ git+https://github.com/cmower/spatial-casadi.git@master"
 ```
 
 ```python
@@ -21,23 +24,23 @@ f = cs.Function("rotation", [x], [r.as_matrix()])
 ```
 
 [Documentation](https://cmower.github.io/spatial-casadi/) ·
-[C++ installation](docs/installation.rst) ·
+[C++ installation](https://cmower.github.io/spatial-casadi/installation.html) ·
 [Issues](https://github.com/cmower/spatial-casadi/issues) ·
-[Citation](CITATION.cff)
+[Citation](https://github.com/cmower/spatial-casadi/blob/master/CITATION.cff)
 
 For development: `uv sync`, then `uv run pytest` (C++17 compiler required).
-See [development instructions](docs/development.rst) for native tests and docs.
+See [development instructions](https://cmower.github.io/spatial-casadi/development.html) for native tests and docs.
 
 ## Release notes
 
-**2.0.0 — unreleased**
+**2.0.0 — 2026-11-15**
 
 - Shared C++ core, Python bindings, CMake packaging, and pip/uv wheel builds.
 - `RigidTransform`, `Slerp`, batches, indexing, broadcasting, and more SciPy-style operations.
 - Fixed identity derivatives, symbolic matrix conversion, and Euler gimbal-lock cases; added derivative and generated-code tests.
 - Simpler documentation and a scalable SVG logo. Removed `deg2rad`/`rad2deg`; legacy spatial classes remain.
 
-See [compatibility and migration](docs/compatibility.rst) for supported features,
+See [compatibility and migration](https://cmower.github.io/spatial-casadi/compatibility.html) for supported features,
 CasADi batch layouts, and intentional differences from SciPy.
 
 | Previous version | Changes |
