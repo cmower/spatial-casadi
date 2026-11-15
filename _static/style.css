@@ -1,0 +1,4 @@
+:root { --content-width: 48rem; }
+.sidebar-brand-text { font-size: 1.2rem; font-weight: 600; }
+
+.sidebar-logo { width: 5rem; background: white; padding: .5rem; border-radius: .5rem; }
