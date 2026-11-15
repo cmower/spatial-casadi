@@ -48,8 +48,22 @@ Release gate
 * Documentation builds without warnings; examples run.
 * Wheel CI passes for each advertised platform and Python version.
 
-CI builds and tests pull requests. Documentation deploys only from ``master``.
-Set the repository's Pages source to GitHub Actions before the first deployment.
+CI builds and tests pull requests. Successful documentation builds on ``master``
+publish the generated HTML to ``gh-pages``, including ``.nojekyll`` so Sphinx's
+``_static`` assets are served. Pull requests and other branches only build.
+
+In repository settings:
+
+* **Pages:** select **Deploy from a branch**, ``gh-pages``, ``/(root)``.
+* **Environments → github-pages:** allow ``gh-pages`` in deployment branch rules.
+  The documentation workflow publishes a branch; GitHub's Pages workflow handles
+  deployment. ``master`` does not need access to that environment.
+
+After merging a workflow change, use **Actions → Documentation → Run workflow**
+on ``master`` to publish again. Re-running an old failed run uses its old workflow.
+The publisher uses the automatic ``GITHUB_TOKEN`` with ``contents: write``;
+repository or organization rules must permit Actions to update ``gh-pages``.
+
 The wheel workflow produces release artifacts without publishing them. After
 reviewing its results, a maintainer can upload those artifacts to PyPI and tag
 the corresponding commit. No automatic publishing credentials are needed.
