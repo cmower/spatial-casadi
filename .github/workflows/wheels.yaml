@@ -1,6 +1,11 @@
 name: Release wheels
 on:
   workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish to PyPI after all checks pass (master only)
+        type: boolean
+        default: false
   push:
     tags: ['v*']
 permissions:
@@ -19,6 +24,7 @@ jobs:
         with:
           name: wheels-${{ matrix.os }}
           path: wheelhouse/*.whl
+          if-no-files-found: error
   source:
     runs-on: ubuntu-latest
     steps:
@@ -31,3 +37,39 @@ jobs:
         with:
           name: source
           path: dist/*.tar.gz
+          if-no-files-found: error
+  distributions:
+    needs: [wheels, source]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: wheels-*
+          path: dist
+          merge-multiple: true
+      - uses: actions/download-artifact@v4
+        with:
+          name: source
+          path: dist
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: '3.12'
+      - run: uvx twine check --strict dist/*
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pypi-distributions
+          path: dist/*
+          if-no-files-found: error
+  publish:
+    if: github.event_name == 'workflow_dispatch' && inputs.publish && github.ref == 'refs/heads/master'
+    needs: distributions
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: pypi-distributions
+          path: dist
+      - uses: pypa/gh-action-pypi-publish@release/v1
