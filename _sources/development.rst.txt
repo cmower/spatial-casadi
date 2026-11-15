@@ -64,9 +64,29 @@ on ``master`` to publish again. Re-running an old failed run uses its old workfl
 The publisher uses the automatic ``GITHUB_TOKEN`` with ``contents: write``;
 repository or organization rules must permit Actions to update ``gh-pages``.
 
-The wheel workflow produces release artifacts without publishing them. After
-reviewing its results, a maintainer can upload those artifacts to PyPI and tag
-the corresponding commit. No automatic publishing credentials are needed.
+Publishing to PyPI
+------------------
+
+The **Release wheels** workflow builds and tests Linux, Windows and macOS wheels,
+checks package metadata, and collects the wheels and source archive in the
+``pypi-distributions`` artifact. Publishing is off by default.
+
+One-time setup:
+
+* In GitHub, create the ``pypi`` environment and restrict deployments to ``master``.
+* In PyPI's project settings, open **Publishing** and add a GitHub trusted
+  publisher: owner ``cmower``, repository ``spatial-casadi``, workflow
+  ``wheels.yaml``, environment ``pypi``. No API token is needed.
+
+For each release, update the version and README release notes, merge into
+``master``, and ensure CI passes. Run **Actions → Release wheels → Run workflow**
+on ``master`` with **Publish to PyPI** selected. Publication runs only after all
+wheel tests and metadata checks pass. Tag the built commit after publication.
+PyPI does not allow replacing uploaded files under the same version.
+
+For a manual upload, download and extract ``pypi-distributions``, then run
+``uvx twine upload --username __token__ /path/to/extracted/*`` and enter a
+project-scoped PyPI API token at the password prompt.
 
 The API is feature-complete for the scope in :doc:`compatibility`. New SciPy
 features are optional. Dependency upgrades need explicit ABI and derivative

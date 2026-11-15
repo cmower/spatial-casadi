@@ -4,17 +4,20 @@ Installation
 Python
 ------
 
+There is currently an issue with PyPI publishing. The recommended installation
+is from GitHub, which requires Git and a C++17 compiler:
+
 .. code-block:: shell
 
-   pip install spatial-casadi
+   pip install "git+https://github.com/cmower/spatial-casadi.git@master"
    # or, in a uv project:
-   uv add spatial-casadi
+   uv add "spatial-casadi @ git+https://github.com/cmower/spatial-casadi.git@master"
    # or, in an existing environment:
-   uv pip install spatial-casadi
+   uv pip install "git+https://github.com/cmower/spatial-casadi.git@master"
 
 Version 2 targets CPython 3.10–3.14 and CasADi 3.8.2. Wheels are configured for
-Linux x86-64, Windows x86-64, and macOS Intel/Apple Silicon. Supported wheels
-need no compiler. Other platforms require a source build with a C++17 compiler.
+Linux x86-64, Windows x86-64, and macOS Intel/Apple Silicon. Installing a wheel
+needs no compiler; the GitHub installation above builds from source.
 The CasADi version is pinned because the extension shares its binary runtime
 and SWIG types; upgrade them together.
 

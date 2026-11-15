@@ -245,16 +245,18 @@
 <h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h1>
 <section id="python">
 <h2>Python<a class="headerlink" href="#python" title="Link to this heading">¶</a></h2>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>spatial-casadi
+<p>There is currently an issue with PyPI publishing. The recommended installation
+is from GitHub, which requires Git and a C++17 compiler:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"git+https://github.com/cmower/spatial-casadi.git@master"</span>
 <span class="c1"># or, in a uv project:</span>
-uv<span class="w"> </span>add<span class="w"> </span>spatial-casadi
+uv<span class="w"> </span>add<span class="w"> </span><span class="s2">"spatial-casadi @ git+https://github.com/cmower/spatial-casadi.git@master"</span>
 <span class="c1"># or, in an existing environment:</span>
-uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>spatial-casadi
+uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"git+https://github.com/cmower/spatial-casadi.git@master"</span>
 </pre></div>
 </div>
 <p>Version 2 targets CPython 3.10–3.14 and CasADi 3.8.2. Wheels are configured for
-Linux x86-64, Windows x86-64, and macOS Intel/Apple Silicon. Supported wheels
-need no compiler. Other platforms require a source build with a C++17 compiler.
+Linux x86-64, Windows x86-64, and macOS Intel/Apple Silicon. Installing a wheel
+needs no compiler; the GitHub installation above builds from source.
 The CasADi version is pinned because the extension shares its binary runtime
 and SWIG types; upgrade them together.</p>
 </section>

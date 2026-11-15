@@ -297,9 +297,27 @@ deployment. <code class="docutils literal notranslate"><span class="pre">master<
 on <code class="docutils literal notranslate"><span class="pre">master</span></code> to publish again. Re-running an old failed run uses its old workflow.
 The publisher uses the automatic <code class="docutils literal notranslate"><span class="pre">GITHUB_TOKEN</span></code> with <code class="docutils literal notranslate"><span class="pre">contents:</span> <span class="pre">write</span></code>;
 repository or organization rules must permit Actions to update <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code>.</p>
-<p>The wheel workflow produces release artifacts without publishing them. After
-reviewing its results, a maintainer can upload those artifacts to PyPI and tag
-the corresponding commit. No automatic publishing credentials are needed.</p>
+</section>
+<section id="publishing-to-pypi">
+<h2>Publishing to PyPI<a class="headerlink" href="#publishing-to-pypi" title="Link to this heading">¶</a></h2>
+<p>The <strong>Release wheels</strong> workflow builds and tests Linux, Windows and macOS wheels,
+checks package metadata, and collects the wheels and source archive in the
+<code class="docutils literal notranslate"><span class="pre">pypi-distributions</span></code> artifact. Publishing is off by default.</p>
+<p>One-time setup:</p>
+<ul class="simple">
+<li><p>In GitHub, create the <code class="docutils literal notranslate"><span class="pre">pypi</span></code> environment and restrict deployments to <code class="docutils literal notranslate"><span class="pre">master</span></code>.</p></li>
+<li><p>In PyPI’s project settings, open <strong>Publishing</strong> and add a GitHub trusted
+publisher: owner <code class="docutils literal notranslate"><span class="pre">cmower</span></code>, repository <code class="docutils literal notranslate"><span class="pre">spatial-casadi</span></code>, workflow
+<code class="docutils literal notranslate"><span class="pre">wheels.yaml</span></code>, environment <code class="docutils literal notranslate"><span class="pre">pypi</span></code>. No API token is needed.</p></li>
+</ul>
+<p>For each release, update the version and README release notes, merge into
+<code class="docutils literal notranslate"><span class="pre">master</span></code>, and ensure CI passes. Run <strong>Actions → Release wheels → Run workflow</strong>
+on <code class="docutils literal notranslate"><span class="pre">master</span></code> with <strong>Publish to PyPI</strong> selected. Publication runs only after all
+wheel tests and metadata checks pass. Tag the built commit after publication.
+PyPI does not allow replacing uploaded files under the same version.</p>
+<p>For a manual upload, download and extract <code class="docutils literal notranslate"><span class="pre">pypi-distributions</span></code>, then run
+<code class="docutils literal notranslate"><span class="pre">uvx</span> <span class="pre">twine</span> <span class="pre">upload</span> <span class="pre">--username</span> <span class="pre">__token__</span> <span class="pre">/path/to/extracted/*</span></code> and enter a
+project-scoped PyPI API token at the password prompt.</p>
 <p>The API is feature-complete for the scope in <a class="reference internal" href="compatibility.html"><span class="doc">SciPy compatibility</span></a>. New SciPy
 features are optional. Dependency upgrades need explicit ABI and derivative
 checks. See <code class="docutils literal notranslate"><span class="pre">THIRD_PARTY_NOTICES</span></code> for SciPy attribution.</p>
@@ -354,6 +372,7 @@ checks. See <code class="docutils literal notranslate"><span class="pre">THIRD_P
             <ul>
 <li><a class="reference internal" href="#">Development and release</a><ul>
 <li><a class="reference internal" href="#release-gate">Release gate</a></li>
+<li><a class="reference internal" href="#publishing-to-pypi">Publishing to PyPI</a></li>
 </ul>
 </li>
 </ul>
