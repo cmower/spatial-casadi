@@ -5,10 +5,13 @@
 Differentiable rotations and rigid transforms for CasADi: one C++ core,
 a SciPy-style Python API, and support for `DM`, `SX`, and `MX`.
 
+There is currently an issue with PyPI publishing. Install the latest version
+from GitHub instead (requires Git and a C++17 compiler):
+
 ```bash
-pip install spatial-casadi
+pip install "git+https://github.com/cmower/spatial-casadi.git@master"
 # or
-uv add spatial-casadi
+uv add "spatial-casadi @ git+https://github.com/cmower/spatial-casadi.git@master"
 ```
 
 ```python
